@@ -23,33 +23,10 @@ class Knn extends CI_Controller
         $this->load->library("pagination");
         $this->load->library('form_validation');
         $this->load->model('ModelPosyandu');
+        $this->load->model("M_data_balita_testing_normalized");
+        $this->load->model("M_data_balita_testing");
     }
 
-
-    public function hitungBBUlaki($data)
-    {
-        // $data = $this->ModelPosyandu->getData('balita', '*', 'where idBayi = ' . $idBayi);
-        $beratAwal = $data['beratAwal'];
-        $umur = $data['umur'];
-        $beratUpdate = $data['beratUpdate'];
-        if ($beratAwal >= 160) {
-            $ntb = "110";
-        } elseif ($beratAwal < 160 && $beratAwal >= 150) {
-            $ntb = "105";
-        } else {
-            $ntb = "100";
-        }
-        $bbi = $beratAwal - $ntb;
-        $beratIdeal = $bbi + ($umur * (7 / 20));
-        if ($beratUpdate == $beratIdeal) {
-            $status = 'Ideal';
-        } elseif ($beratUpdate < $beratIdeal) {
-            $status = 'Gizi Kurang';
-        } else {
-            $status = 'Gizi Lebih';
-        }
-        return $status;
-    }
 
     public function index()
     {
@@ -72,11 +49,9 @@ class Knn extends CI_Controller
         $data['title'] = 'Penimbangan Balita | Sistem Informasi Stunting';
         $data['user'] = $this->db->get_where('user', ['username' => $this->session->userdata('username')])->row_array();
 
-        $balita = $this->ModelPosyandu->getData('balita', '*');
-
-        for ($i = 0; $i < sizeof($balita); $i++) {
-            $balita[$i]['status'] = $this->hitungBBUlaki($balita[$i]);
-        }
+        $balita['balitaData'] = $this->M_data_balita_testing->read();
+        $balita['balitaDataNormalized'] =
+            $this->M_data_balita_testing_normalized->read();
 
         if ($this->form_validation->run() == false) {
             $this->load->view('templates/header-datatables', $data);
@@ -86,247 +61,228 @@ class Knn extends CI_Controller
         }
     }
 
-    public function create()
+
+    private function normalize()
     {
-        $data['page_name'] = "Tambah Data Testing";
-        $inpust =  ($this->input->post('data_name[]') == null) ? array() : $this->input->post('data_name[]');
-        // echo var_dump( $inpust );
-        foreach ($inpust as $ind => $val) {
-            if (!empty($this->input->post('data_name')[$ind])) {
-                $this->form_validation->set_rules('data_name[' . $ind . ']', 'data_name', 'trim|required');
-                $this->form_validation->set_rules('data_semester[' . $ind . ']', 'data_semester', 'trim|required');
-                $this->form_validation->set_rules('data_IPK[' . $ind . ']', 'data_IPK', 'trim|required');
-                $this->form_validation->set_rules('data_gaji_ortu[' . $ind . ']', 'data_gaji_ortu', 'trim|required');
-                $this->form_validation->set_rules('data_UKT[' . $ind . ']', 'data_UKT', 'trim|required');
-                $this->form_validation->set_rules('data_tanggungan[' . $ind . ']', 'data_tanggungan', 'trim|required');
-                $this->form_validation->set_rules('data_label[' . $ind . ']', 'data_label', 'trim|required');
-            }
-        }
-
-
-
-        if ($this->form_validation->run() == true) {
-            $data_testing = array();
-            $inpust =  ($this->input->post('data_name[]') == null) ? array() : $this->input->post('data_name[]');
-            foreach ($inpust as $ind => $val) {
-                $data = array();
-                if (!empty($this->input->post('data_name')[$ind])) {
-                    $data_test["data_name"] = $this->input->post('data_name')[$ind];
-                    $data_test["data_semester"] = $this->input->post('data_semester')[$ind];
-                    $data_test["data_IPK"] = $this->input->post('data_IPK')[$ind];
-                    $data_test["data_gaji_ortu"] = $this->input->post('data_gaji_ortu')[$ind];
-                    $data_test["data_UKT"] = $this->input->post('data_UKT')[$ind];
-                    $data_test["data_tanggungan"] = $this->input->post('data_tanggungan')[$ind];
-                    $data_test["data_label"] = $this->input->post('data_label')[$ind];
-
-                    array_push($data_testing, $data_test);
-                }
-            }
-
-            // echo var_dump( $data_testing );
-            if ($this->m_data_testing->create($data_testing)) {
-                $this->session->set_flashdata('info', array(
-                    'from' => 1,
-                    'message' =>  'item berhasil ditambah'
-                ));
-                redirect(site_url('admin/data_testing'));
-                return;
-            }
-            $this->session->set_flashdata('info', array(
-                'from' => 0,
-                'message' =>  'terjadi kesalahan saat mengirim data'
-            ));
-            redirect(site_url('admin/data_testing'));
-        } else {
-            $data['files'] = $this->m_data_testing->read();
-            $data['user'] = $this->m_user->getUser($this->session->userdata('user_id'));
-            $this->load->view("_admin/_template/header");
-            $this->load->view("_admin/_template/sidebar_menu");
-            $this->load->view("_admin/data_testing/View_create", $data);
-            $this->load->view("_admin/_template/footer");
-        }
     }
 
-    public function edit($data_id = null)
+    public function getBBTB($dataBalita)
     {
-        $data['page_name'] = "Edit Data Testing";
-        $inpust =  ($this->input->post('data_name[]') == null) ? array() : $this->input->post('data_name[]');
-        // echo var_dump( $inpust );
-        foreach ($inpust as $ind => $val) {
-            if (!empty($this->input->post('data_name')[$ind])) {
-                $this->form_validation->set_rules('data_name[' . $ind . ']', 'data_name', 'trim|required');
-                $this->form_validation->set_rules('data_semester[' . $ind . ']', 'data_semester', 'trim|required');
-                $this->form_validation->set_rules('data_IPK[' . $ind . ']', 'data_IPK', 'trim|required');
-                $this->form_validation->set_rules('data_gaji_ortu[' . $ind . ']', 'data_gaji_ortu', 'trim|required');
-                $this->form_validation->set_rules('data_UKT[' . $ind . ']', 'data_UKT', 'trim|required');
-                $this->form_validation->set_rules('data_tanggungan[' . $ind . ']', 'data_tanggungan', 'trim|required');
+        if ($dataBalita['jenisKelamin'] == "Laki-Laki") {
+            if ($dataBalita['umur'] <= 24) {
+                $BBUARRAY = $this->M_Knn_Balita_Constant->BBTB_CONSTANT_ARRAY_MALE_24MONTH();
+            } else {
+                $BBUARRAY = $this->M_Knn_Balita_Constant->BBTB_CONSTANT_ARRAY_MALE_60MONTH();
             }
-        }
-
-
-
-        if ($this->form_validation->run() == true) {
-            $data_testing = array();
-            $inpust =  ($this->input->post('data_name[]') == null) ? array() : $this->input->post('data_name[]');
-            foreach ($inpust as $ind => $val) {
-                $data = array();
-                if (!empty($this->input->post('data_name')[$ind])) {
-                    $data["data_name"] = $this->input->post('data_name')[$ind];
-                    $data["data_semester"] = $this->input->post('data_semester')[$ind];
-                    $data["data_IPK"] = $this->input->post('data_IPK')[$ind];
-                    $data["data_gaji_ortu"] = $this->input->post('data_gaji_ortu')[$ind];
-                    $data["data_UKT"] = $this->input->post('data_UKT')[$ind];
-                    $data["data_tanggungan"] = $this->input->post('data_tanggungan')[$ind];
-
-                    // array_push($data_testing, $data) ;
-                }
-            }
-
-            // echo var_dump( $data_testing );
-            $data_param['data_id'] = $this->input->post('data_id');
-
-            if ($this->m_data_testing->update($data, $data_param)) {
-                $this->session->set_flashdata('info', array(
-                    'from' => 1,
-                    'message' =>  'item berhasil diubah'
-                ));
-                redirect(site_url('admin/data_testing'));
-                return;
-            }
-            $this->session->set_flashdata('info', array(
-                'from' => 0,
-                'message' =>  'terjadi kesalahan saat mengirim data'
-            ));
-            redirect(site_url('admin/data_testing'));
         } else {
-            if ($data_id == null) redirect(site_url('admin/data_testing'));
-
-            $data['files'] = $this->m_data_testing->read($data_id);
-            $data['user'] = $this->m_user->getUser($this->session->userdata('user_id'));
-            $this->load->view("_admin/_template/header");
-            $this->load->view("_admin/_template/sidebar_menu");
-            $this->load->view("_admin/data_testing/View_edit", $data);
-            $this->load->view("_admin/_template/footer");
+            if ($dataBalita['umur'] <= 24) {
+                $BBUARRAY = $this->M_Knn_Balita_Constant->BBTB_CONSTANT_ARRAY_FEMALE_24MONTH();
+            } else {
+                $BBUARRAY = $this->M_Knn_Balita_Constant->BBTB_CONSTANT_ARRAY_FEMALE_60MONTH();
+            }
         }
+
+        $BBTB = 0;
+
+        foreach ($BBUARRAY as $data) {
+            if ($data['tinggi'] == round($dataBalita['panjangLahir'], 1)) {
+                $BBUREFRENCE = $data;
+            }
+        }
+
+        if (!isset($BBUREFRENCE)) {
+            $bbtbData['bbtb'] = null;
+            $bbtbData['label'] = "data not valid";
+            return $bbtbData;
+        }
+
+        if ($dataBalita['beratLahir'] < $BBUREFRENCE['MED']) {
+            $BBTB = ($dataBalita['beratLahir'] - $BBUREFRENCE['MED']) / ($BBUREFRENCE['MED'] - $BBUREFRENCE['-1SD']);
+        } else {
+            $BBTB = ($dataBalita['beratLahir'] - $BBUREFRENCE['MED']) / ($BBUREFRENCE['+1SD'] - $BBUREFRENCE['MED']);
+        }
+
+        $bbtbData['bbtb'] = $BBTB;
+        switch ($BBTB) {
+            case $BBTB < $BBUREFRENCE['-3SD']:
+                $bbtbData['label'] = "Gizi Buruk";
+                break;
+            case $BBTB >= $BBUREFRENCE['-3SD'] && $BBTB < $BBUREFRENCE['-2SD']:
+                $bbtbData['label'] = "Gizi Kurang";
+                break;
+            case $BBTB >= $BBUREFRENCE['-2SD'] && $BBTB < $BBUREFRENCE['+1SD']:
+                $bbtbData['label'] = "Gizi Baik";
+                break;
+            case $BBTB >= $BBUREFRENCE['+1SD'] && $BBTB < $BBUREFRENCE['+2SD']:
+                $bbtbData['label'] = "Berisiko gizi lebih";
+                break;
+            case $BBTB >= $BBUREFRENCE['+2SD'] && $BBTB < $BBUREFRENCE['+3SD']:
+                $bbtbData['label'] = "Gizi lebih";
+                break;
+            case $BBTB > $BBUREFRENCE['+3SD']:
+                $bbtbData['label'] = "Obesitas";
+                break;
+        }
+
+
+
+        return $bbtbData;
     }
+
+    public function getTBU($dataBalita)
+    {
+        if ($dataBalita['jenisKelamin'] == "Laki-Laki") {
+            $BBUARRAY = $this->M_Knn_Balita_Constant->TBU_CONSTANT_ARRAY_MALE();
+        } else {
+            $BBUARRAY = $this->M_Knn_Balita_Constant->TBU_CONSTANT_ARRAY_FEMALE();
+        }
+
+        $TBU = 0;
+
+        foreach ($BBUARRAY as $data) {
+            if ($data['umur'] == $dataBalita['umur']) {
+                $BBUREFRENCE = $data;
+            }
+        }
+
+        if (!isset($BBUREFRENCE)) {
+            return $TBU;
+        }
+
+        if ($dataBalita['panjangLahir'] < $BBUREFRENCE['MED']) {
+            $TBU = ($dataBalita['panjangLahir'] - $BBUREFRENCE['MED']) / ($BBUREFRENCE['MED'] - $BBUREFRENCE['-1SD']);
+        } else {
+            $TBU = ($dataBalita['panjangLahir'] - $BBUREFRENCE['MED']) / ($BBUREFRENCE['+1SD'] - $BBUREFRENCE['MED']);
+        }
+
+        $tbuData['tbu'] = $TBU;
+        switch ($TBU) {
+            case $TBU < $BBUREFRENCE['-3SD']:
+                $tbuData['label'] = "S. Pendek";
+                break;
+            case $TBU >= $BBUREFRENCE['-3SD'] && $TBU < $BBUREFRENCE['-2SD']:
+                $tbuData['label'] = "Pendek";
+                break;
+            case $TBU >= $BBUREFRENCE['-2SD'] && $TBU < $BBUREFRENCE['+3SD']:
+                $tbuData['label'] = "Normal";
+                break;
+            case $TBU > $BBUREFRENCE['+3SD']:
+                $tbuData['label'] = "S. Tinggi";
+                break;
+        }
+
+        return $tbuData;
+    }
+
+    public function getBBU($dataBalita)
+    {
+        if ($dataBalita['jenisKelamin'] == "Laki-Laki") {
+            $BBUARRAY = $this->M_Knn_Balita_Constant->BBU_CONSTANT_ARRAY_MALE();
+        } else {
+            $BBUARRAY = $this->M_Knn_Balita_Constant->BBU_CONSTANT_ARRAY_FEMALE();
+        }
+
+        $Bbu = 0;
+
+        foreach ($BBUARRAY as $data) {
+            if ($data['umur'] == $dataBalita['umur']) {
+                $BBUREFRENCE = $data;
+            }
+        }
+
+        if (!isset($BBUREFRENCE)) {
+            return $Bbu;
+        }
+
+        if ($dataBalita['beratLahir'] < $BBUREFRENCE['MED']) {
+            $Bbu = ($dataBalita['beratLahir'] - $BBUREFRENCE['MED']) / ($BBUREFRENCE['MED'] - $BBUREFRENCE['-1SD']);
+        } else {
+            $Bbu = ($dataBalita['beratLahir'] - $BBUREFRENCE['MED']) / ($BBUREFRENCE['+1SD'] - $BBUREFRENCE['MED']);
+        }
+
+        $bbuData['bbu'] = $Bbu;
+        switch ($Bbu) {
+            case $Bbu <= $BBUREFRENCE['-3SD']:
+                $bbuData['label'] = "Berat badan sangat kurang";
+                break;
+            case $Bbu > $BBUREFRENCE['-3SD'] && $Bbu <= $BBUREFRENCE['-2SD']:
+                $bbuData['label'] = "Berat badan kurang";
+                break;
+            case $Bbu > $BBUREFRENCE['-2SD'] && $Bbu <= $BBUREFRENCE['+1SD']:
+                $bbuData['label'] = "Berat badan Normal";
+                break;
+            case $Bbu > $BBUREFRENCE['+1SD']:
+                $bbuData['label'] = "Berat badan Lebih";
+                break;
+        }
+
+        return $bbuData;
+    }
+
+
 
     public function import()
     {
-        $data['page_name'] = "import Data Testing";
-        // if( !($_POST) ) redirect(site_url(''));  
+        $this->load->model('M_Knn_Balita_Constant');
 
-        $this->load->library('upload'); // Load librari upload
-        $filename = "excel";
-        $config['upload_path'] = './upload/datatestingexcel/';
-        $config['allowed_types'] = "xls|xlsx";
-        $config['overwrite'] = "true";
-        $config['max_size'] = "2048";
-        $config['file_name'] = '' . $filename;
-        $this->upload->initialize($config);
+        $balitaEntries = $this->ModelPosyandu->getData('balita', '*');
+        $balitaNewArray = [];
 
-        if ($this->upload->do_upload("document_file")) {
-            $filename = $this->upload->data()["file_name"];
-            // echo $filename;
-            // Load plugin PHPExcel nya
-            include APPPATH . 'third_party/PHPExcel.php';
+        foreach ($balitaEntries as $balita) {
+            $bbuData = $this->getBBU($balita);
+            $tbuData = $this->getTBU($balita);
+            $bbtbData = $this->getBBTB($balita);
 
-            $excelreader = new PHPExcel_Reader_Excel2007();
-            $loadexcel = $excelreader->load('upload/datatestingexcel/' . $filename); // Load file yang telah diupload ke folder excel
-            $sheet = $loadexcel->getActiveSheet()->toArray(null, true, true, true);
+            $newBalita = array();
+            $newbalita['bbu'] = $bbuData['bbu'];
+            $newbalita['tbu'] = $tbuData['tbu'];
+            $newbalita['bbtb'] = $bbtbData['bbtb'];
+            $newbalita['bbu_label'] = $bbuData['label'];
+            $newbalita['tbu_label'] = $tbuData['label'];
+            $newbalita['bbtb_label'] = $bbtbData;
+            $newBalita['jenis_kelamin'] = $balita['jenisKelamin'];
+            $newBalita['usia'] = $balita['umur'];
+            $newBalita['id_balita'] = $balita['id'];
 
-            // Buat sebuah vari
-            $data_testing = array();
-            $numrow = 1;
-            foreach ($sheet as $row) {
-                // Cek $numrow apakah lebih dari 1
-                // Artinya karena baris pertama adalah nama-nama kolom
-                // Jadi dilewat saja, tidak usah diimport
-                if ($numrow > 1 &&  !empty($row['A'])) {
-                    $data_test["data_name"] = $row['A'];
-                    $data_test["data_IPK"] = $row['B'];
-                    $data_test["data_semester"] = $row['C'];
-                    $data_test["data_gaji_ortu"] = $row['D'];
-                    $data_test["data_tanggungan"] = $row['E'];
-                    $data_test["data_UKT"] = $row['F'];
-                    $data_test["data_label"] = $row['G'];
-                    // Kita push (add) array data ke variabel data
-                    array_push($data_testing, $data_test);
-                }
+            var_dump($bbtbData);
+            var_dump($newBalita);
 
-                $numrow++; // Tambah 1 setiap kali looping
-            }
-
-            // echo var_dump( $data_testing );
-            if ($this->m_data_testing->create($data_testing)) {
-                $this->session->set_flashdata('info', array(
-                    'from' => 1,
-                    'message' =>  'item berhasil diimport'
-                ));
-                redirect(site_url('admin//data_testing'));
-                return;
-            }
-            $this->session->set_flashdata('info', array(
-                'from' => 0,
-                'message' =>  'terjadi kesalahan saat mengirim data'
-            ));
-            redirect(site_url('admin/data_testing'));
-        } else {
-            echo  $this->upload->display_errors();
-            $this->load->view("_admin/_template/header");
-            $this->load->view("_admin/_template/sidebar_menu");
-            $this->load->view("_admin/data_testing/View_import", $data);
-            $this->load->view("_admin/_template/footer");
+            array_push($balitaNewArray, $newBalita);
         }
-    }
+        // $this->M_data_balita_testing->create($balitaNewArray);
+        // redirect(site_url("/Knn"));
 
-    public function normalize()
-    {
-        $this->m_data_testing_normalized->clear(); //kosongka normalisasi
-        $files = $this->m_data_testing->read();
-        $min_max = $this->m_data_testing->get_min_max();
+        // $balitaDividedByUmur = [];
+        // foreach ($balitaEntries as $balita) {
+        //     if (!isset($balitaDividedByUmur[$balita['umur']])) {
+        //         $balitaDividedByUmur[$balita['umur']] = array("{$balita['id']}" => array('panjang_badan' => $balita['panjangLahir'], 'berat_badan' =>  $balita['beratLahir'], 'lingkar_kepala' =>  $balita['lingkar_kepala']));
+        //     } else {
+        //         $balitaDividedByUmur[$balita['umur']]["{$balita['id']}"] = array('panjang_badan' => $balita['panjangLahir'], 'berat_badan' =>  $balita['beratLahir'], 'lingkar_kepala' =>  $balita['lingkar_kepala']);
+        //     }
+        // }
 
-        if (empty($min_max)) {
-            redirect(site_url('admin/data_testing'));
-            return;
-        }
-        // echo json_encode( $min_max );
-        // prosedur untuk menormalisasi
-        for ($i = 0; $i < count($files); $i++) {
-            // echo round( $files[ $i ]->data_UKT,3)."<br>";
-            $len = $min_max["max_data_semester"] -  $min_max["min_data_semester"];
-            $files[$i]->data_semester  =  (($files[$i]->data_semester - $min_max["min_data_semester"]) / ($len)) * 1 + 0;
-            $files[$i]->data_semester = round($files[$i]->data_semester, 4);
+        // echo "<div style='white-space:pre-wrap'>" . var_export($balitaDividedByUmur, true) . "</div>";
 
-            $len = $min_max["max_data_IPK"] -  $min_max["min_data_IPK"];
-            $files[$i]->data_IPK  =  (($files[$i]->data_IPK - $min_max["min_data_IPK"]) / ($len)) * 1 + 0;
-            $files[$i]->data_IPK = round($files[$i]->data_IPK, 4);
+        // foreach ($balitaDividedByUmur as $b) {
+        //     $n = 0;
+        //     $sumBeratBadan = 0;
+        //     $medianBeratBadan = 0;
+        //     foreach ($b as $balita) {
 
-            $len = $min_max["max_data_gaji_ortu"] -  $min_max["min_data_gaji_ortu"];
-            $files[$i]->data_gaji_ortu  =  (($files[$i]->data_gaji_ortu - $min_max["min_data_gaji_ortu"]) / ($len)) * 1 + 0;
-            $files[$i]->data_gaji_ortu = round($files[$i]->data_gaji_ortu, 4);
+        //         $n++;
+        //         echo "<div style='white-space:pre-wrap'>" . var_export($balita, true) . "</div>";
+        //     }
+        // }
 
-            $len = $min_max["max_data_UKT"] -  $min_max["min_data_UKT"];
-            $files[$i]->data_UKT  =  (($files[$i]->data_UKT - $min_max["min_data_UKT"]) / ($len)) * 1 + 0;
-            $files[$i]->data_UKT = round($files[$i]->data_UKT, 4);
-
-            $len = $min_max["max_data_tanggungan"] -  $min_max["min_data_tanggungan"];
-            $files[$i]->data_tanggungan  =  (($files[$i]->data_tanggungan - $min_max["min_data_tanggungan"]) / ($len)) * 1 + 0;
-            $files[$i]->data_tanggungan = round($files[$i]->data_tanggungan, 4);
-        }
-
-        if ($this->m_data_testing_normalized->create($files)) {
-            $this->session->set_flashdata('info', array(
-                'from' => 1,
-                'message' =>  'item berhasil di normalisasi'
-            ));
-            redirect(site_url('admin/data_testing'));
-            return;
-        }
-        $this->session->set_flashdata('info', array(
-            'from' => 0,
-            'message' =>  'terjadi kesalahan saat mengirim data'
-        ));
-        redirect(site_url('admin/data_testing'));
+        // foreach ($balitaEntries as $balita) {
+        //     $newBalita['id_balita'] = $balita['id'];
+        //     $newBalita['tinggi_badan'] = $balita['panjangLahir'];
+        //     $newBalita['berat_badan'] = $balita['beratLahir'];
+        //     $newBalita['lingkar_kepala'] = $balita['lingkar_kepala'];
+        //     $newBalita['status'] = $this->hitungBBUlaki($balita);
+        //     $this->M_data_balita_testing->create($newBalita);
+        // }
+        // redirect(site_url("/Knn"));
     }
 
     public function delete($data_id = null)
