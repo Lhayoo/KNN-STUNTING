@@ -1,0 +1,38 @@
+<?php
+defined('BASEPATH') or exit('No direct script access allowed');
+
+class BumilModel extends CI_Model
+{
+
+	public function getData()
+    {
+        $query = "SELECT penimbanganbumil.*, bumil.namaBumil
+                    From penimbanganbumil JOIN bumil
+                    ON penimbanganbumil.idIbu = bumil.idIbu
+                    ";
+
+        return $this->db->query($query)->result_array();
+    }
+	public function addData($data)
+	{
+		return $this->db->insert($this->table, $data);
+	}
+	public function cekId($tableName,$where=""){
+		$data = $this -> db ->query('SELECT * FROM '.$tableName." ".$where);
+  		return $data->num_rows();
+ 
+	}
+	public function dataTerakhir(){
+		$data = $this->db->query("SELECT MAX(RIGHT(idBalita,3)) AS id FROM balita");
+		return $data;
+	}
+
+	public function HapusData($tableName, $where){
+		$res = $this ->db-> delete($tableName,$where);
+		return $res;
+	}
+	public function UpdateData($tableName,$data,$where){
+		$res = $this ->db-> update($tableName,$data,$where);
+		return $res;
+	}
+	}

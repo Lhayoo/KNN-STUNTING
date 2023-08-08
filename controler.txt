@@ -1,0 +1,545 @@
+BUMIL CONTROLLER
+<?php
+defined('BASEPATH') or exit('No direct script access allowed');
+
+class Bumil extends CI_Controller
+{
+    public function __construct()
+    {
+        parent::__construct();
+        $this->load->model('ModelPosyandu');
+    }
+
+    public function hitungBBIdeal($idIbu) {
+        $data = $this->ModelPosyandu->getData('bumil', '*', 'where idIbu = ' . $idIbu);
+        $tinggiIbu = $data[0]['tinggiIbu'];
+        $usiaKandungan = $data[0]['usiaKandungan'];
+        $beratUpdate = $data[0]['beratUpdate'];
+        if ($tinggiIbu >= 160) {
+            $ntb = "110";
+        } elseif ($tinggiIbu < 160 && $tinggiIbu >= 150) {
+            $ntb = "105";
+        } else {
+            $ntb = "100";
+        }
+        $bbi = $tinggiIbu - $ntb;
+        $beratIdeal = $bbi + ($usiaKandungan * (7 / 20));
+        if ($beratUpdate == $beratIdeal) {
+            $status = '<div class="alert alert-success">Ideal</div>';
+        } elseif ($beratUpdate < $beratIdeal) {
+            $status = '<div class="alert alert-warning">Terlalu Kurus</div>';
+        } else {
+            $status = '<div class="alert alert-danger">Terlalu Gemuk</div>';
+        }
+        return $status;
+    }
+
+    public function index() {
+        $data['title'] = 'Data Ibu Hamil | Sistem Informasi Stunting';
+        $data['user'] = $this->db->get_where('user', ['username' => $this->session->userdata('username')])->row_array();
+        
+        $bumil = $this->ModelPosyandu->getData('bumil', '*');
+        
+        if ($this->form_validation->run() == false) {
+            $this->load->view('templates/header-datatables', $data);
+            $this->load->view('templates/sidebar', $data);
+            $this->load->view('bumil/index', array('bumil' => $bumil));
+            $this->load->view('templates/footer-datatables');
+           
+       }
+    }
+
+    public function add() {
+        $this->load->view('templates/header-datatables');
+        $this->load->view('templates/sidebar');
+        
+        $this->load->view('bumil/input');
+        $this->load->view('templates/footer-datatables');
+    }
+
+    public function processAdd() {
+        $idIbu = $_POST['idIbu'];
+        $namaBumil = $_POST['namaBumil'];
+        $namaSuami = $_POST['namaSuami'];
+        $tempatLahir = $_POST['tempatLahir'];
+        $tanggalLahir = $_POST['tanggalLahir'];
+        $kandunganKe = $_POST['kandunganKe'];
+        $usiaKandungan = $_POST['usiaKandungan'];
+        $alamatBumil = $_POST['alamatBumil'];
+        $hpht = $_POST['hpht'];
+        $tinggiIbu = $_POST['tinggiIbu'];
+        $beratAwal = $_POST['beratAwal'];
+        $now = date("Y-m-d");
+        $datetime1 = new DateTime($tanggalLahir);
+        $datetime2 = new DateTime($now);
+        $difference = $datetime1->diff($datetime2)->days;
+        $umur = ceil($difference / 365);
+
+        $bulan = date('Y-m-d', strtotime('-3 month', strtotime($hpht)));
+        $tanggal = date('Y-m-d', strtotime('+7 days', strtotime($bulan)));
+        $perkiraanLahir = date('Y-m-d', strtotime('+1 year', strtotime($tanggal)));
+
+        if (!isset($idIbu) || trim($idIbu) == '' ||
+                !isset($namaBumil) || trim($namaBumil) == '' || !isset($namaSuami) || trim($namaSuami) == '' ||
+                !isset($tempatLahir) || trim($tempatLahir) == '' || !isset($tanggalLahir) || trim($tanggalLahir) == '' ||
+                !isset($kandunganKe) || trim($kandunganKe) == '' || !isset($usiaKandungan) || trim($usiaKandungan) == '' ||
+                !isset($alamatBumil) || trim($alamatBumil) == '' || !isset($hpht) || trim($hpht) == '' ||
+                !isset($tinggiIbu) || trim($tinggiIbu) == '' || !isset($beratAwal) || trim($beratAwal) == '') {
+            redirect('Bumil/add');
+        } else {
+            $tambah_data = array(
+                'idIbu' => $idIbu, 'namaBumil' => $namaBumil, 'namaSuami' => $namaSuami,
+                'tempatLahir' => $tempatLahir, 'tanggalLahir' => $tanggalLahir,
+                'kandunganKe' => $kandunganKe, 'usiaKandungan' => $usiaKandungan,
+                'hpht' => $hpht, 'umur' => $umur, 'perkiraanLahir' => $perkiraanLahir,
+                'alamatBumil' => $alamatBumil, 'beratUpdate' => $beratAwal,
+                'tinggiIbu' => $tinggiIbu, 'beratAwal' => $beratAwal
+            );
+            $res = $this->ModelPosyandu->addData('bumil', $tambah_data);
+            if ($res >= 1) {
+                redirect('Bumil');}}}
+
+    public function doUpdate() {
+        $idIbu = $_POST['idIbu'];
+        $usiaKandungan = $_POST['usiaKandungan'];
+        $tinggiIbu = $_POST['tinggiIbu'];
+        $beratUpdate = $_POST['beratUpdate'];
+         if (!isset($usiaKandungan) || trim($usiaKandungan) == '' ||
+                        !isset($beratUpdate) || trim($beratUpdate) == '') {
+                        redirect('Bumil/edit/' . $idIbu);
+                    } else {
+                        $update_data = array(
+                            'usiaKandungan' => $usiaKandungan,
+                            'tinggiIbu' => $tinggiIbu,
+                            'beratUpdate' => $beratUpdate
+                        );
+                        $where = array('idIbu' => $idIbu);
+                        $res = $this->ModelPosyandu->UpdateData('bumil', $update_data, $where);
+                        if ($res >= 1) {
+                            redirect('Bumil/detail/' . $idIbu);}}}
+
+    public function detail($idIbu) {
+        $cek = $this->ModelPosyandu->cekId('bumil', 'where idIbu = ' . $idIbu);
+        if ($cek > 0) {
+            $data = $this->ModelPosyandu->getData('bumil', '*', 'where idIbu = ' . $idIbu);
+            $status = $this->hitungBBIdeal($idIbu);
+            $dataBumil = array('idIbu' => $data[0]['idIbu'],
+                'namaBumil' => $data[0]['namaBumil'], 'namaSuami' => $data[0]['namaSuami'],
+                'alamatBumil' => $data[0]['alamatBumil'], 'umur' => $data[0]['umur'],
+                'usiaKandungan' => $data[0]['usiaKandungan'], 'kandunganKe' => $data[0]['kandunganKe'],
+                'tempatLahir' => $data[0]['tempatLahir'], 'tanggalLahir' => $data[0]['tanggalLahir'],
+                'beratUpdate' => $data[0]['beratUpdate'], 'beratAwal' => $data[0]['beratAwal'],
+                'tinggiIbu' => $data[0]['tinggiIbu'],
+                'hpht' => $data[0]['hpht'], 'perkiraanLahir' => $data[0]['perkiraanLahir'],
+                'status' => $status
+            );
+            $this->load->view('templates/header-datatables');
+            $this->load->view('templates/sidebar');
+            $this->load->view('bumil/detail_ibuhamil', $dataBumil);
+            $this->load->view('templates/footer-datatables');
+        } else {
+            redirect('Bumil');
+        }
+    }
+
+    public function edit($idIbu) {
+        $cek = $this->ModelPosyandu->cekId('bumil', 'where idIbu = ' . $idIbu);
+        if ($cek > 0) {
+            $data = $this->ModelPosyandu->getData('bumil', '*', 'where idIbu = ' . $idIbu);
+            $dataBumil = array('idIbu' => $data[0]['idIbu']);
+            $this->load->view('templates/header-datatables');
+            $this->load->view('templates/sidebar');
+            $this->load->view('bumil/edit_ibuhamil', $dataBumil);
+            $this->load->view('templates/footer-datatables');
+        } else {
+            redirect('Bumil');
+        }
+    }
+
+    public function delete($idIbu) {
+        $where = array('idIbu' => $idIbu);
+        $res = $this->ModelPosyandu->HapusData('bumil', $where);
+        $this->session->set_flashdata('msg', 'Berhasil Dihapus');
+        if ($res >= 1) {
+            redirect('Bumil');}}
+
+}
+................................................
+BALITA CONTROLLER
+<?php
+defined('BASEPATH') or exit('No direct script access allowed');
+
+class Anak extends CI_Controller
+{
+    public function __construct()
+    {
+        parent::__construct();
+        $this->load->model('ModelPosyandu');
+    }
+
+    public function hitungBBUlaki($id_anak) {
+        $data = $this->ModelPosyandu->getData('anak', '*', 'where id_anak = ' . $id_anak);
+        $beratLahir = $data[0]['beratLahir'];
+        $panjangLahir = $data[0]['umurLahir'];
+        $beratUpdate = $data[0]['beratUpdate'];
+        if ($tinggiIbu >= 160) {
+            $ntb = "110";
+        } elseif ($tinggiIbu < 160 && $tinggiIbu >= 150) {
+            $ntb = "105";
+        } else {
+            $ntb = "100";
+        }
+        $bbi = $tinggiIbu - $ntb;
+        $beratIdeal = $bbi + ($usiaKandungan * (7 / 20));
+        if ($beratUpdate == $beratIdeal) {
+            $status = '<div class="alert alert-success">Ideal</div>';
+        } elseif ($beratUpdate < $beratIdeal) {
+            $status = '<div class="alert alert-warning">Terlalu Kurus</div>';
+        } else {
+            $status = '<div class="alert alert-danger">Terlalu Gemuk</div>';
+        }
+        return $status;
+    }
+    public function index() {
+        $data['title'] = 'Data Balita | Sistem Informasi Stunting';
+        $data['user'] = $this->db->get_where('user', ['username' => $this->session->userdata('username')])->row_array();
+        
+        $balita = $this->ModelPosyandu->getData('balita', '*');
+        
+        if ($this->form_validation->run() == false) {
+            $this->load->view('templates/header-datatables', $data);
+            $this->load->view('templates/sidebar', $data);
+            $this->load->view('balita/index', array('balita' => $balita));
+            $this->load->view('templates/footer-datatables');
+           
+       }
+    }
+
+    public function add() {
+        $this->load->view('templates/header-datatables');
+        $this->load->view('templates/sidebar');
+        
+        $this->load->view('balita/input');
+        $this->load->view('templates/footer-datatables');
+    }
+
+    public function processAdd() {
+        $data = $this->ModelPosyandu->dataTerakhir();
+        $balita = $this->ModelPosyandu->getData('balita', 'MAX(RIGHT(idBalita,3)) AS last');
+        $lastId = array('last' => $balita[0]['last']);
+        $last = implode("", $lastId);
+        $kode = "";
+        $baru = 1;
+        if ($data->num_rows() > 0) {
+            $baru = $last + 1;
+            $kode = str_pad($baru, 4, "0", STR_PAD_LEFT);
+        }
+        $namaBayi = $_POST['namaBayi'];
+        $namaIbu = $_POST['namaIbu'];
+        $namaAyah = $_POST['namaAyah'];
+        $tempatLahir = $_POST['tempatLahir'];
+        $tanggalLahir = $_POST['tanggalLahir'];
+        $anakKe = $_POST['anakKe'];
+        $alamatOrtu = $_POST['alamatOrtu'];
+        $jenisKelamin = $_POST['jenisKelamin'];
+        $golonganDarah = $_POST['golonganDarah'];
+        $panjangLahir = $_POST['panjangLahir'];
+        $beratLahir = $_POST['beratLahir'];
+        if (!isset($namaBayi) || trim($namaBayi) == '' || !isset($namaIbu) || trim($namaIbu) == '' || 
+        !isset($namaAyah) || trim($namaAyah) == '' || !isset($tempatLahir) || trim($tempatLahir) == '' || 
+        !isset($tanggalLahir) || trim($tanggalLahir) == '' || !isset($alamatOrtu) || trim($alamatOrtu) == '' || 
+        !isset($anakKe) || trim($anakKe) == '' || !isset($jenisKelamin) || trim($jenisKelamin) == '' || 
+        !isset($golonganDarah) || trim($golonganDarah) == '' || !isset($panjangLahir) || trim($panjangLahir) == '' ||
+        !isset($beratLahir) || trim($beratLahir) == '') {
+            $idBalita = NULL;
+        } else {
+            $idBalita = 'BALITA' . $kode;
+        }
+        $now = date("Y-m-d");
+        $datetime1 = new DateTime($tanggalLahir);
+        $datetime2 = new DateTime($now);
+        $difference = $datetime1->diff($datetime2)->days;
+        $usiaBayi = ceil($difference / 30);
+
+        if ($jenisKelamin == 1) {
+            $jkDB = 0;
+        } else {
+            $jkDB = 1;
+        }
+        if ($idBalita == NULL) {
+            redirect('Balita/add');
+        } else {
+            $tambah_data = array(
+                'idBalita' => $idBalita, 'namaBayi' => $namaBayi,
+                'namaIbu' => $namaIbu, 'namaAyah' => $namaAyah,
+                'tempatLahir' => $tempatLahir, 'tanggalLahir' => $tanggalLahir,
+                'alamatOrtu' => $alamatOrtu, 'anakKe' => $anakKe,
+                'jenisKelamin' => $jkDB, 'golonganDarah' => $golonganDarah,
+                'usiaBayi' => $usiaBayi,
+                'beratLahir' => $beratLahir, 'panjangLahir' => $panjangLahir,
+                'beratSekarang' => $beratLahir, 'panjangSekarang' => $panjangLahir
+            );
+            $res = $this->ModelPosyandu->addData('balita', $tambah_data);
+            if ($res >= 1) {
+                redirect('Balita');}}}
+
+    public function informasiBayi($idBalita) {
+        $data = $this->ModelPosyandu->getData('balita', '*', 'where idBalita = "' . $idBalita . '"');
+        $jkArr = array('jenisKelamin' => $data[0]['jenisKelamin']);
+        $golArr = array('golonganDarah' => $data[0]['golonganDarah']);
+        $kodeJenis = implode("", $jkArr);
+        $kodeGol = implode("", $golArr);
+        if ($kodeJenis == 0) {
+            $jenisKelamin = "Laki-Laki";
+        } else {
+            $jenisKelamin = "Perempuan";
+        }
+        if ($kodeGol == 'BT') {
+            $golonganDarah = "Belum Tahu";
+        } else {
+            $golonganDarah = $kodeGol;
+        }
+        $balita = array(
+            'idBalita' => $data[0]['idBalita'], 'namaBayi' => $data[0]['namaBayi'],
+            'namaIbu' => $data[0]['namaIbu'], 'namaAyah' => $data[0]['namaAyah'],
+            'tanggalLahir' => $data[0]['tanggalLahir'], 'tempatLahir' => $data[0]['tempatLahir'],
+            'alamatOrtu' => $data[0]['alamatOrtu'], 'anakKe' => $data[0]['anakKe'],
+            'panjangLahir' => $data[0]['panjangLahir'], 'beratLahir' => $data[0]['beratLahir'],
+            'jenisKelamin' => $jenisKelamin, 'golonganDarah' => $golonganDarah,
+            'panjangSekarang' => $data[0]['panjangSekarang'], 'beratSekarang' => $data[0]['beratSekarang']
+        );
+        return $balita;
+    }
+
+    public function detail($idBalita) {
+        $cek = $this->ModelPosyandu->cekId('balita', 'where idBalita = "' . $idBalita . '"');
+        if ($cek > 0) {
+            $data = $this->informasiBayi($idBalita);
+            $this->load->view('templates/header-datatables');
+            $this->load->view('templates/sidebar');
+            $this->load->view('balita/detail_Balita', $data);
+            $this->load->view('templates/footer-datatables');
+        } else {
+            redirect('Balita');
+        }
+    }
+
+    public function edit($idBalita) {
+        $cek = $this->ModelPosyandu->cekId('balita', 'where idBalita = "' . $idBalita . '"');
+        if ($cek > 0) {
+            $data = $this->informasiBayi($idBalita);
+            $this->load->view('templates/header-datatables');
+            $this->load->view('templates/sidebar');
+            $this->load->view('balita/edit_Balita', $data);
+            $this->load->view('templates/footer-datatables');
+        } else {
+            redirect('Balita');
+        }
+    }
+
+    public function doUpdate() {
+        $idBalita = $_POST['idBalita'];
+        $tanggalLahir = $_POST['tanggalLahir'];
+        $alamatOrtu = $_POST['alamatOrtu'];
+        $golonganDarah = $_POST['golonganDarah'];
+        $panjangSekarang = $_POST['panjangSekarang'];
+        $beratSekarang = $_POST['beratSekarang'];
+        if (!isset($panjangSekarang) || trim($panjangSekarang) == '' ||
+                !isset($beratSekarang) || trim($beratSekarang) == '') {
+            redirect('Balita/edit/' . $idBalita);
+        } else {
+            $update_data = array(
+                'alamatOrtu' => $alamatOrtu,
+                'golonganDarah' => $golonganDarah,
+                'panjangSekarang' => $panjangSekarang,
+                'beratSekarang' => $beratSekarang
+            );
+            $where = array('idBalita' => $idBalita);
+            $res = $this->ModelPosyandu->UpdateData('balita', $update_data, $where);
+            if ($res >= 1) {
+                redirect('Balita/detail/' . $idBalita);}}}
+
+    public function delete($idBalita) {
+        $where = array('idBalita' => $idBalita);
+        $res = $this->ModelPosyandu->HapusData('balita', $where);
+        $this->session->set_flashdata('msg', 'Berhasil Dihapus');
+        if ($res >= 1) {
+            redirect('Balita');}}
+
+}
+
+................................................
+LANSIA CONTROLLER
+<?php
+defined('BASEPATH') or exit('No direct script access allowed');
+
+class Lansia extends CI_Controller
+{
+    public function __construct()
+    {
+        parent::__construct();
+        $this->load->model('ModelPosyandu');
+    }
+
+    public function hitbblanski($idLansia) {
+        $data = $this->ModelPosyandu->getData('lansia', '*', 'where idLansia = ' . $idLansia);
+        $tinggiLansia = $data[0]['tinggiLansia'];
+        $beratUpdate = $data[0]['beratUpdate'];
+        if ($tinggiLansia >= 168) {
+            $ntb = "110";
+        } elseif ($tinggiLansia < 160 && $tinggiLansia >= 150) {
+            $ntb = "105";
+        } else {
+            $ntb = "100";
+        }
+        $bblanski = $tinggiLansia - $ntb;
+        $beratIdeal = $bblanski + ($beratUpdate * (7 / 20));
+        if ($beratUpdate == $beratIdeal) {
+            $status = '<div class="alert alert-success">Normal</div>';
+        } elseif ($beratUpdate < $beratIdeal) {
+            $status = '<div class="alert alert-warning">Gizi Kurang</div>';
+        } else {
+            $status = '<div class="alert alert-danger">Gizi Lebih</div>';
+        }
+        return $status;
+    }
+    public function hitbblansper($idLansia) {
+        $data = $this->ModelPosyandu->getData('lansia', '*', 'where idLansia = ' . $idLansia);
+        $beratlansper = $data[0]['beratlansper'];
+        $tinggilansper = $data[0]['tinggilansper'];
+        $beratUpdate = $data[0]['beratUpdate'];
+        if ($tinggilansper >= 168) {
+            $ntb = "110";
+        } elseif ($tinggilansper < 160 && $tinggilansper >= 150) {
+            $ntb = "105";
+        } else {
+            $ntb = "100";
+        }
+        $bblansper = $tinggilansper - $ntb;
+        $beratIdeal = $bblansper + ($beratlansper * (7 / 20));
+        if ($beratUpdate == $beratIdeal) {
+            $status = '<div class="alert alert-success">Normal</div>';
+        } elseif ($beratUpdate < $beratIdeal) {
+            $status = '<div class="alert alert-warning">Gizi Kurang</div>';
+        } else {
+            $status = '<div class="alert alert-danger">Gizi Lebih</div>';
+        }
+        return $status;
+    }
+    public function index() {
+        $data['title'] = 'Data Lansia | Sistem Informasi Stunting';
+        $data['user'] = $this->db->get_where('user', ['username' => $this->session->userdata('username')])->row_array();
+        
+        $lansia = $this->ModelPosyandu->getData('lansia', '*');
+        
+        if ($this->form_validation->run() == false) {
+            $this->load->view('templates/header-datatables', $data);
+            $this->load->view('templates/sidebar', $data);
+            $this->load->view('lansia/index', array('lansia' => $lansia));
+            $this->load->view('templates/footer-datatables');
+           
+       }
+    }
+
+    public function add() {
+        $this->load->view('templates/header-datatables');
+        $this->load->view('templates/sidebar');
+        
+        $this->load->view('lansia/input');
+        $this->load->view('templates/footer-datatables');
+    }
+
+    public function processAdd() {
+        $idLansia = $_POST['idLansia'];
+        $namaLansia = $_POST['namaLansia'];
+        $tempatLahir = $_POST['tempatLahir'];
+        $tanggalLahir = $_POST['tanggalLahir'];
+        $alamatLansia = $_POST['alamatLansia'];
+        $tinggiLansia = $_POST['tinggiLansia'];
+        $golDarah = $_POST['golDarah'];
+        $jk = $_POST['jk'];
+        $beratAwal = $_POST['beratAwal'];
+        $now = date("Y-m-d");
+        $datetime1 = new DateTime($tanggalLahir);
+        $datetime2 = new DateTime($now);
+        $difference = $datetime1->diff($datetime2)->days;
+        $umur = ceil($difference / 365);
+
+        if (!isset($idLansia) || trim($idLansia) == '' ||
+                !isset($namaLansia) || trim($namaLansia) == '' ||
+                !isset($tempatLahir) || trim($tempatLahir) == '' || !isset($tanggalLahir) || trim($tanggalLahir) == '' ||
+                !isset($alamatLansia) || trim($alamatLansia) == '' || !isset($jk) || trim($jk) == '' || !isset($golDarah) || trim($golDarah) == '' ||
+                !isset($tinggiLansia) || trim($tinggiLansia) == '' || !isset($beratAwal) || trim($beratAwal) == '') {
+            redirect('Lansia/add');
+        } else {
+            $tambah_data = array(
+                'idLansia' => $idLansia, 'namaLansia' => $namaLansia, 
+                'tempatLahir' => $tempatLahir, 'tanggalLahir' => $tanggalLahir,
+                'umur' => $umur, 'jk' => $jk, 'golDarah' => $golDarah,
+                'alamatLansia' => $alamatLansia, 'beratUpdate' => $beratAwal,
+                'tinggiLansia' => $tinggiLansia, 'beratAwal' => $beratAwal
+            );
+            $res = $this->ModelPosyandu->addData('lansia', $tambah_data);
+            if ($res >= 1) {
+                redirect('Lansia');}}}
+
+    public function doUpdate() {
+        $idLansia = $_POST['idLansia'];
+        $tinggiLansia = $_POST['tinggiLansia'];
+        $beratUpdate = $_POST['beratUpdate'];
+        if (!isset($beratUpdate) || trim($beratUpdate) == '') {
+            redirect('Lansia/edit/' . $idLansia);
+        } else {
+            $update_data = array(
+                'tinggiLansia' => $tinggiLansia,
+                'beratUpdate' => $beratUpdate
+            );
+            $where = array('idLansia' => $idLansia);
+            $res = $this->ModelPosyandu->UpdateData('lansia', $update_data, $where);
+            if ($res >= 1) {
+                redirect('Lansia/detail/' . $idLansia);}}}
+
+    public function detail($idLansia) {
+        $cek = $this->ModelPosyandu->cekId('lansia', 'where idLansia = ' . $idLansia);
+        if ($cek > 0) {
+            $data = $this->ModelPosyandu->getData('lansia', '*', 'where idLansia = ' . $idLansia);
+            $status = $this->hitbblanski($idLansia);
+            $dataLansia = array('idLansia' => $data[0]['idLansia'],
+                'namaLansia' => $data[0]['namaLansia'],
+                'alamatLansia' => $data[0]['alamatLansia'], 'umur' => $data[0]['umur'],
+                'tempatLahir' => $data[0]['tempatLahir'], 'tanggalLahir' => $data[0]['tanggalLahir'],
+                'beratUpdate' => $data[0]['beratUpdate'], 'beratAwal' => $data[0]['beratAwal'],
+                'tinggiLansia' => $data[0]['tinggiLansia'], 'jk' => $data[0]['jk'], 'golDarah' => $data[0]['golDarah'],
+                'status' => $status
+            );
+            $this->load->view('templates/header-datatables');
+            $this->load->view('templates/sidebar');
+            $this->load->view('lansia/detail_Lansia', $dataLansia);
+            $this->load->view('templates/footer-datatables');
+        } else {
+            redirect('Lansia');
+        }
+    }
+
+    public function edit($idLansia) {
+        $cek = $this->ModelPosyandu->cekId('lansia', 'where idLansia = ' . $idLansia);
+        if ($cek > 0) {
+            $data = $this->ModelPosyandu->getData('lansia', '*', 'where idLansia = ' . $idLansia);
+            $dataLansia = array('idLansia' => $data[0]['idLansia']);
+            $this->load->view('templates/header-datatables');
+            $this->load->view('templates/sidebar');
+            $this->load->view('lansia/edit_Lansia', $dataLansia);
+            $this->load->view('templates/footer-datatables');
+        } else {
+            redirect('Lansia');
+        }
+    }
+
+    public function delete($idLansia) {
+        $where = array('idLansia' => $idLansia);
+        $res = $this->ModelPosyandu->HapusData('lansia', $where);
+        $this->session->set_flashdata('msg', 'Berhasil Dihapus');
+        if ($res >= 1) {
+            redirect('Lansia');}}
+
+}
