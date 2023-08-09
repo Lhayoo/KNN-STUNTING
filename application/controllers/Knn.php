@@ -30,22 +30,6 @@ class Knn extends CI_Controller
 
     public function index()
     {
-        // $log['log_datetime'] = date("Y-m-d H:i:s");
-        // $log['log_message'] = "HOMEPAGE :  user => " . $this->session->userdata('user_username') . "( id = " . $this->session->userdata('user_id') . ") ; result => ";
-        // $log['user_id'] = $this->session->userdata('user_id');
-        // $log['log_message'] .= "true";
-        // $this->m_log->inserLog($log);
-        // //   $data=$this->m_kost->getData( $this->session->userdata('user_id') );
-        // //   $data['files'] = $data;
-        // $data['page_name'] = "Data Testing";
-        // $data['user'] = $this->m_user->getUser($this->session->userdata('user_id'))[0];
-        // $data['files'] = $this->m_data_testing->read();
-        // $data['files_normalized'] = $this->m_data_testing_normalized->read();
-        // $this->load->view("_admin/_template/header");
-        // $this->load->view("_admin/_template/sidebar_menu");
-        // $this->load->view("_admin/data_testing/View_list", $data);
-        // $this->load->view("_admin/_template/footer");
-
         $data['title'] = 'Penimbangan Balita | Sistem Informasi Stunting';
         $data['user'] = $this->db->get_where('user', ['username' => $this->session->userdata('username')])->row_array();
 
@@ -53,10 +37,11 @@ class Knn extends CI_Controller
         $balita['balitaDataNormalized'] =
             $this->M_data_balita_testing_normalized->read();
 
+
         if ($this->form_validation->run() == false) {
             $this->load->view('templates/header-datatables', $data);
             $this->load->view('templates/sidebar', $data);
-            $this->load->view('knn/index', array('balita' => $balita));
+            $this->load->view('knn/index', array('balitaData' => $balita['balitaData']));
             $this->load->view('templates/footer-datatables');
         }
     }
@@ -91,8 +76,8 @@ class Knn extends CI_Controller
         }
 
         if (!isset($BBUREFRENCE)) {
-            $bbtbData['bbtb'] = null;
-            $bbtbData['label'] = "data not valid";
+            $bbtbData['bbtb'] = -999999;
+            $bbtbData['label'] = "INVALID";
             return $bbtbData;
         }
 
@@ -203,16 +188,16 @@ class Knn extends CI_Controller
         $bbuData['bbu'] = $Bbu;
         switch ($Bbu) {
             case $Bbu <= $BBUREFRENCE['-3SD']:
-                $bbuData['label'] = "Berat badan sangat kurang";
+                $bbuData['label'] = "BB. S. kurang";
                 break;
             case $Bbu > $BBUREFRENCE['-3SD'] && $Bbu <= $BBUREFRENCE['-2SD']:
-                $bbuData['label'] = "Berat badan kurang";
+                $bbuData['label'] = "BB. kurang";
                 break;
             case $Bbu > $BBUREFRENCE['-2SD'] && $Bbu <= $BBUREFRENCE['+1SD']:
-                $bbuData['label'] = "Berat badan Normal";
+                $bbuData['label'] = "BB. Normal";
                 break;
             case $Bbu > $BBUREFRENCE['+1SD']:
-                $bbuData['label'] = "Berat badan Lebih";
+                $bbuData['label'] = "BB. Lebih";
                 break;
         }
 
@@ -233,24 +218,20 @@ class Knn extends CI_Controller
             $tbuData = $this->getTBU($balita);
             $bbtbData = $this->getBBTB($balita);
 
-            $newBalita = array();
-            $newbalita['bbu'] = $bbuData['bbu'];
-            $newbalita['tbu'] = $tbuData['tbu'];
-            $newbalita['bbtb'] = $bbtbData['bbtb'];
-            $newbalita['bbu_label'] = $bbuData['label'];
-            $newbalita['tbu_label'] = $tbuData['label'];
-            $newbalita['bbtb_label'] = $bbtbData;
-            $newBalita['jenis_kelamin'] = $balita['jenisKelamin'];
-            $newBalita['usia'] = $balita['umur'];
-            $newBalita['id_balita'] = $balita['id'];
-
-            var_dump($bbtbData);
-            var_dump($newBalita);
+            $newBalita = array(
+                'bbu' => $bbuData['bbu'], 'tbu' => $tbuData['tbu'], 'bbtb' => $bbtbData['bbtb'],
+                'bbu_label' => $bbuData['label'], 'tbu_label' => $tbuData['label'], 'bbtb_label' => $bbtbData['label'],
+                'jenis_kelamin' => $balita['jenisKelamin'] == "Laki-Laki" ? 1 : 0,
+                'usia' => $balita['umur'], 'id_balita' => $balita['id'],
+                'tinggi_badan' => $balita['panjangLahir'], 'berat_badan' => $balita['beratLahir'],
+                'lingkar_kepala' => $balita['lingkar_kepala']
+            );
 
             array_push($balitaNewArray, $newBalita);
         }
-        // $this->M_data_balita_testing->create($balitaNewArray);
-        // redirect(site_url("/Knn"));
+
+        $this->M_data_balita_testing->create($balitaNewArray);
+        redirect(site_url("/Knn"));
 
         // $balitaDividedByUmur = [];
         // foreach ($balitaEntries as $balita) {

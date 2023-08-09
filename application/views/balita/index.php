@@ -13,9 +13,9 @@
         <div class="col-md-12 col-sm-12 ">
             <div class="x_panel">
                 <div class="x_title">
-                <form action="<?= base_url('Balita/add') ?>" method="POST">
-                <input type="submit" name="simpan" value="Tambah Data Balita" class="btn btn-primary">
-                <div class="clearfix"></div>
+                    <form action="<?= base_url('Balita/add') ?>" method="POST">
+                        <input type="submit" name="simpan" value="Tambah Data Balita" class="btn btn-primary">
+                        <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
                     <div class="row">
@@ -48,9 +48,9 @@
                                                 <td><?= $b['namaAyah']; ?></td>
                                                 <td><?= $b['alamat']; ?></td>
                                                 <td>
-                                                <a href="<?php echo base_url()."Balita/detail/".$b['id']; ?>" style="text-decoration: none;" title="Informasi Lengkap"><button type="button" class="btn btn-primary btn-circle"><i class="fa fa-list"></i></button>
-                                                <a href="<?php echo base_url()."Balita/edit/".$b['id']; ?>" style="text-decoration: none;" title="Ubah Data"><button type="button" class="btn btn-warning btn-circle"><i class="fa fa-pencil"></i></button>
-                                                <a href="<?php echo base_url()."Balita/delete/".$b['id']; ?>" style="text-decoration: none;" title="Hapus Data"><button type="button" class="btn btn-danger btn-circle"><i class="fa fa-times"></i></button>
+                                                    <a href="<?php echo base_url() . "Balita/detail/" . $b['id']; ?>" style="text-decoration: none;" title="Informasi Lengkap"><button type="button" class="btn btn-primary btn-circle"><i class="fa fa-list"></i></button>
+                                                        <a href="<?php echo base_url() . "Balita/edit/" . $b['id']; ?>" style="text-decoration: none;" title="Ubah Data"><button type="button" class="btn btn-warning btn-circle"><i class="fa fa-pencil"></i></button>
+                                                            <a href="<?php echo base_url() . "Balita/delete/" . $b['id']; ?>" style="text-decoration: none;" title="Hapus Data"><button type="button" class="btn btn-danger btn-circle"><i class="fa fa-times"></i></button>
                                                 </td>
                                             </tr>
                                             <?php $i++; ?>

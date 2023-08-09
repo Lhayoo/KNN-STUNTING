@@ -16,11 +16,11 @@ class M_data_balita_testing extends CI_Model
     public function read($data_id = -1)
     {
         $sql = "
-            SELECT * from data_balita_testing
+            SELECT * from data_balita_testing JOIN balita WHERE data_balita_testing.id_balita = balita.id 
         ";
         if ($data_id != -1) {
             $sql .= "
-                where data_id = '$data_id'
+              AND data_id = '$data_id'
             ";
         }
         return $query = $this->db->query($sql)->result();
