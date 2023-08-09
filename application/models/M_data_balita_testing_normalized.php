@@ -16,7 +16,7 @@ class M_data_balita_testing_normalized extends CI_Model
     public function read($data_id = -1, $mode = "object")
     {
         $sql = "
-            SELECT * from data_balita_testing_normalized
+             SELECT * from data_balita_testing_normalized JOIN balita WHERE data_balita_testing_normalized.id_balita = balita.id
         ";
         if ($data_id != -1) {
             $sql .= "
@@ -38,6 +38,6 @@ class M_data_balita_testing_normalized extends CI_Model
     }
     public function clear()
     {
-        return $query = $this->db->query(" TRUNCATE data_balita_testing_normalized ");
+        return $query = $this->db->query("TRUNCATE data_balita_testing_normalized ");
     }
 }

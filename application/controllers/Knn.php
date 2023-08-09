@@ -41,14 +41,70 @@ class Knn extends CI_Controller
         if ($this->form_validation->run() == false) {
             $this->load->view('templates/header-datatables', $data);
             $this->load->view('templates/sidebar', $data);
-            $this->load->view('knn/index', array('balitaData' => $balita['balitaData']));
+            $this->load->view('knn/index', array('balitaData' => $balita['balitaData'], 'balitaDataNormalized' => $balita['balitaDataNormalized']));
             $this->load->view('templates/footer-datatables');
         }
     }
 
 
-    private function normalize()
+    public function normalize()
     {
+        $this->M_data_balita_testing_normalized->clear(); //kosongka normalisasi
+        $files = $this->M_data_balita_testing->read();
+        $min_max = $this->M_data_balita_testing->get_min_max();
+
+        if (empty($min_max)) {
+            redirect(site_url('admin/data_testing'));
+            return;
+        }
+
+        echo "<div style='white-space:pre-wrap'>" . var_export($min_max, true) . "</div>";
+
+        $newDataArray = [];
+
+        // echo json_encode( $min_max );
+        // prosedur untuk menormalisasi
+        for ($i = 0; $i < count($files); $i++) {
+            if ($files[$i]->bbtb_label == "INVALID") {
+                continue;
+            }
+
+            // echo round( $files[ $i ]->data_UKT,3)."<br>";
+            $len = $min_max["max_data_bbu"] -  $min_max["min_data_bbu"];
+            $files[$i]->bbu  =  (($files[$i]->bbu - $min_max["min_data_bbu"]) / ($len)) * 1 + 0;
+            $files[$i]->bbu = round($files[$i]->bbu, 4);
+
+            $len = $min_max["max_data_tbu"] -  $min_max["min_data_tbu"];
+            $files[$i]->tbu  =  (($files[$i]->tbu - $min_max["min_data_tbu"]) / ($len)) * 1 + 0;
+            $files[$i]->tbu = round($files[$i]->tbu, 4);
+
+            $len = $min_max["max_data_bbtb"] -  $min_max["min_data_bbtb"];
+            $files[$i]->bbtb  =  (($files[$i]->bbtb - $min_max["min_data_bbtb"]) / ($len)) * 1 + 0;
+            $files[$i]->bbtb = round($files[$i]->bbtb, 4);
+
+            array_push($newDataArray, array(
+                'bbu' => $files[$i]->bbu, 'tbu' => $files[$i]->tbu, 'bbtb' => $files[$i]->bbtb,
+                'bbu_label' => $files[$i]->bbu_label, 'tbu_label' => $files[$i]->tbu_label, 'bbtb_label' => $files[$i]->bbtb_label,
+                'jenis_kelamin' => $files[$i]->jenis_kelamin,
+                'usia' => $files[$i]->umur, 'id_balita' => $files[$i]->id,
+                'tinggi_badan' => $files[$i]->panjangLahir, 'berat_badan' => $files[$i]->beratLahir,
+                'lingkar_kepala' => $files[$i]->lingkar_kepala
+            ));
+        }
+
+        if ($this->M_data_balita_testing_normalized->create($newDataArray)) {
+            $this->session->set_flashdata('info', array(
+                'from' => 1,
+                'message' =>  'item berhasil di normalisasi'
+            ));
+            redirect(site_url('knn'));
+            return;
+        }
+        $this->session->set_flashdata('info', array(
+            'from' => 0,
+            'message' =>  'terjadi kesalahan saat mengirim data'
+        ));
+        redirect(site_url('knn'));
     }
 
     public function getBBTB($dataBalita)
@@ -70,8 +126,13 @@ class Knn extends CI_Controller
         $BBTB = 0;
 
         foreach ($BBUARRAY as $data) {
+            if (round($dataBalita['panjangLahir'], 1) < 45) {
+                $BBUREFRENCE = $BBUARRAY[0];
+                break;
+            }
             if ($data['tinggi'] == round($dataBalita['panjangLahir'], 1)) {
                 $BBUREFRENCE = $data;
+                break;
             }
         }
 
@@ -229,7 +290,6 @@ class Knn extends CI_Controller
 
             array_push($balitaNewArray, $newBalita);
         }
-
         $this->M_data_balita_testing->create($balitaNewArray);
         redirect(site_url("/Knn"));
 

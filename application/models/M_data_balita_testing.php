@@ -48,12 +48,12 @@ class M_data_balita_testing extends CI_Model
             return array();
         }
         return array(
-            "min_data_tinggi_badan" => $this->db->query("SELECT tinggi_badan FROM data_balita_testing ORDER BY tinggi_badan ASC LIMIT 1")->result()[0]->tinggi_badan,
-            "max_data_tinggi_badan" => $this->db->query("SELECT tinggi_badan FROM data_balita_testing ORDER BY tinggi_badan DESC LIMIT 1")->result()[0]->tinggi_badan,
-            "min_data_berat_badan" => $this->db->query("SELECT berat_badan FROM data_balita_testing ORDER BY berat_badan ASC LIMIT 1")->result()[0]->berat_badan,
-            "max_data_berat_badan" => $this->db->query("SELECT berat_badan FROM data_balita_testing ORDER BY berat_badan DESC LIMIT 1")->result()[0]->berat_badan,
-            "min_data_lingkar_kepala" => $this->db->query("SELECT lingkar_kepala FROM data_balita_testing ORDER BY lingkar_kepala ASC LIMIT 1")->result()[0]->lingkar_kepala,
-            "max_data_lingkar_kepala" => $this->db->query("SELECT lingkar_kepala FROM data_balita_testing ORDER BY lingkar_kepala DESC LIMIT 1")->result()[0]->lingkar_kepala,
+            "min_data_bbu" => $this->db->query("SELECT bbu FROM data_balita_testing ORDER BY bbu ASC LIMIT 1")->result()[0]->bbu,
+            "max_data_bbu" => $this->db->query("SELECT bbu FROM data_balita_testing ORDER BY bbu DESC LIMIT 1")->result()[0]->bbu,
+            "min_data_tbu" => $this->db->query("SELECT tbu FROM data_balita_testing ORDER BY tbu ASC LIMIT 1")->result()[0]->tbu,
+            "max_data_tbu" => $this->db->query("SELECT tbu FROM data_balita_testing ORDER BY tbu DESC LIMIT 1")->result()[0]->tbu,
+            "min_data_bbtb" => $this->db->query("SELECT bbtb FROM data_balita_testing ORDER BY bbtb ASC LIMIT 1")->result()[0]->bbtb,
+            "max_data_bbtb" => $this->db->query("SELECT bbtb FROM data_balita_testing ORDER BY bbtb DESC LIMIT 1")->result()[0]->bbtb,
         );
     }
 }
