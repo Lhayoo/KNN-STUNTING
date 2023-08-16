@@ -28,7 +28,7 @@
                                                 <th>No</th>
                                                 <th>Nama</th>
                                                 <th>Jenis Kelamin</th>
-                                                <th>Usia(bulan)</th>
+                                                <th>Usia (bulan)</th>
                                                 <th>Berat Badan</th>
                                                 <th>Tinggi Badan</th>
                                                 <th>Lingkar Kepala</th>
@@ -105,7 +105,7 @@
                                                 <th>No</th>
                                                 <th>Nama</th>
                                                 <th>Jenis Kelamin</th>
-                                                <th>Usia(bulan)</th>
+                                                <th>Usia (bulan)</th>
                                                 <th>Berat Badan</th>
                                                 <th>Tinggi Badan</th>
                                                 <th>Lingkar Kepala</th>

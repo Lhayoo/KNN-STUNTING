@@ -290,6 +290,7 @@ class Knn extends CI_Controller
 
             array_push($balitaNewArray, $newBalita);
         }
+        $this->M_data_balita_testing->clear();
         $this->M_data_balita_testing->create($balitaNewArray);
         redirect(site_url("/Knn"));
 

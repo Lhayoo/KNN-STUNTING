@@ -38,6 +38,11 @@ class M_data_balita_testing extends CI_Model
         return $this->db->count_all("data_balita_testing");
     }
 
+    public function clear()
+    {
+        return $query = $this->db->query("TRUNCATE data_balita_testing");
+    }
+
     public function get_min_max()
     {
         $sql = "

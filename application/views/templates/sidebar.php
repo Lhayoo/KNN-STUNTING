@@ -21,7 +21,7 @@
                     <li><a href="<?= base_url('UsersController') ?>"><i class="fa fa-user"></i> Data Users</a>
                     </li>
                 </ul>
-               
+
                 <ul class="nav side-menu">
                     <li><a href="<?= base_url('balita') ?>"><i class="fa fa-child"></i> Data Balita</a>
                     </li>
@@ -34,22 +34,22 @@
                     <li><a href="<?= base_url('laporan_anak') ?>"><i class="fa fa-file-pdf-o"></i> Laporan Balita</a>
                     </li>
                 </ul>
-               
+
             </div>
-            
+
             <div class="menu_section">
-                <h3>Pengolah Data dengan  KNN</h3>
-                
-               
+                <h3>Pengolah Data Balita dengan KNN</h3>
+
+
                 <ul class="nav side-menu">
-                    <li><a href="<?= base_url('KNN') ?>"><i class="fa fa-child"></i> Pengalahan dg KNN</a>
+                    <li><a href="<?= base_url('knn') ?>"><i class="fa fa-child"></i> Data Train Balita</a>
                     </li>
                 </ul>
                 <ul class="nav side-menu">
-                    <li><a href="<?= base_url('Penimbangan_Balita') ?>"><i class="fa fa-child"></i> Laporan Hasil dg KNN</a>
+                    <li><a href="<?= base_url('knn_balita') ?>"><i class="fa fa-child"></i>Data Uji Balita</a>
                     </li>
                 </ul>
-               
+
             </div>
 
             <div class="menu_section">
