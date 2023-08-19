@@ -20,7 +20,6 @@ class Balita extends CI_Controller
             $this->load->view('templates/sidebar', $data);
             $this->load->view('balita/index', array('balita' => $balita));
             $this->load->view('templates/footer-datatables');
-           
        }
     }
 
