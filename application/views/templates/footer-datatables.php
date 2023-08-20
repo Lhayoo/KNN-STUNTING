@@ -22,6 +22,8 @@
 <!-- iCheck -->
 <script src="<?= base_url('vendors/iCheck/icheck.min.js') ?>"></script>
 <!-- Datatables -->
+
+<script src="<?= base_url('build/js/toastr.min.js') ?>"></script>
 <script src="<?= base_url('vendors/datatables/jquery.dataTables.min.js') ?>"></script>
 <script src="<?= base_url('vendors/datatables/dataTables.bootstrap4.min.js') ?>"></script>
 <!-- Sweet Alert 2 -->
@@ -31,6 +33,10 @@
 <!-- Custom Theme Scripts -->
 <script src="<?= base_url('build/js/custom.min.js') ?>"></script>
 
+<script src="<?= base_url('build/js/toastr.min.js') ?>"></script>
+
+<script>
+</script>
 </body>
 
 </html>

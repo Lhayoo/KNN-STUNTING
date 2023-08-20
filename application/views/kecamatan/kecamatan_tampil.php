@@ -1,85 +1,71 @@
-<!-- Content Wrapper. Contains page content -->
-<div class="content-wrapper">
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-        <h1>
-            Data Kecamatan
-            <small>Mengelola Data Kecamatan</small>
-        </h1>
-        <ol class="breadcrumb">
-            <li><a href="<?php echo site_url();?>"><i class="fa fa-dashboard"></i> Home</a></li>
-            <li><a href="<?php echo site_url('kecamatan');?>">Data Kecamatan</a></li>
-        </ol>
-    </section>
-
-    <!-- Main content -->
-    <section class="content">
-
-        <!-- Default box -->
-        <div class="box">
-            <div class="box-header with-border">
-                <h3 class="box-title">
-                    <?php echo anchor('kecamatan/tambah','<i class="fa fa-plus"></i> Tambah Data',array('class'=>'btn btn-sm btn-warning'));?>
-                </h3>
-
-                <div class="box-tools pull-right">
-                    <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
-                        title="Collapse">
-                        <i class="fa fa-minus"></i></button>
-                    <button type="button" class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip"
-                        title="Remove">
-                        <i class="fa fa-times"></i></button>
+<div class="right_col" role="main">
+    <div class="page-title">
+        <div class="title_left">
+            <h3>Data kecamatan</h3>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 ">
+            <div class="x_panel">
+                <div class="x_title">
+                    <form action="<?= base_url('kecamatan/add') ?>" method="POST">
+                        <input type="submit" name="simpan" value="Tambah Data kecamatan" class="btn btn-primary">
+                        <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card-box table-responsive">
+                                <table id="datatable" class="table table-striped table-bordered" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Nama kecamatan</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php $i = 1; ?>
+                                        <?php foreach ($kecamatan as $b) : ?>
+                                        <tr>
+                                            <th scope="row" style="width: 15px;">
+                                                <center><?= $i; ?></center>
+                                            </th>
+                                            <td><?= $b['nama_kecamatan']; ?></td>
+                                            <td>
+                                                <a href="<?php echo base_url() . "kecamatan/detail/" . $b['id_kecamatan']; ?>"
+                                                    style="text-decoration: none;" title="Informasi Lengkap"><button
+                                                        type="button" class="btn btn-primary btn-circle"><i
+                                                            class="fa fa-list"></i></button>
+                                                    <a href="<?php echo base_url() . "kecamatan/edit/" . $b['id_kecamatan']; ?>"
+                                                        style="text-decoration: none;" title="Ubah Data"><button
+                                                            type="button" class="btn btn-warning btn-circle"><i
+                                                                class="fa fa-pencil"></i></button>
+                                                        <a href="<?php echo base_url() . "kecamatan/delete/" . $b['id_kecamatan']; ?>"
+                                                            style="text-decoration: none;" title="Hapus Data"><button
+                                                                type="button" class="btn btn-danger btn-circle"><i
+                                                                    class="fa fa-times"></i></button>
+                                            </td>
+                                        </tr>
+                                        <?php $i++; ?>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="box-body">
-
-                <?php echo $this->session->flashdata('pesan');?>
-                <table class="table table-striped table-bordered">
-                    <tr>
-                        <th width="5%">No.</th>
-                        <th width="10%">Nama Kecamatan</th>
-                        <th width="15%">Aksi</th>
-                    </tr>
-
-                    <?php
-            if(!empty($query)){
-              $no = 0;
-              foreach($query as $row):
-                $no++;
-                ?>
-                    <tr>
-                        <td><?php echo $no;?></td>
-                        <td><?php echo $row->nama_kecamatan;?></td>
-                        <td>
-                            <?php echo anchor('kecamatan/detail/'.$row->id_kecamatan, '<i class="fa fa-search"></i>',array(
-                      'class'=>'btn btn-info btn-xs'
-                    ));?>&nbsp;
-                            <?php echo anchor('kecamatan/ubah/'.$row->id_kecamatan, '<i class="fa fa-pencil"></i>',array(
-                      'class'=>'btn btn-warning btn-xs'
-                    ));?>&nbsp;
-                            <?php echo anchor('kecamatan/hapus/'.$row->id_kecamatan, '<i class="fa fa-trash"></i>',array(
-                      'class'=>'btn btn-danger btn-xs',
-                      'onclick'=>"return confirm('Anda yakin akan menghapus data ini?')"
-                    ));?>&nbsp;
-                        </td>
-                    </tr>
-                    <?php
-                endforeach;
-            }else{
-              echo '<tr class="danger"><th colspan="6">Data tidak tersedia.</th></tr>';
-            }
-            ?>
-                </table>
-            </div>
-            <!-- /.box-body -->
-            <div class="box-footer">
-                <?php echo $halaman;?>
-            </div>
-            <!-- /.box-footer-->
         </div>
-        <!-- /.box -->
-
-    </section>
-    <!-- /.content -->
+    </div>
 </div>
-<!-- /.content-wrapper -->
+
+
+<script type="text/javascript">
+<?php if ($this->session->flashdata('success')) { ?>
+toastr.success("<?php echo $this->session->flashdata('success'); ?>");
+
+<?php } ?>
+console.log();
+</script>

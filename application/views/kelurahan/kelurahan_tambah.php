@@ -4,10 +4,6 @@
             <h3>Tambah Data Kelurahan</h3>
         </div>
     </div>
-    <div class="flash-dataq" data-flashdata="<?php echo $this->session->flashdata('msg'); ?>"></div>
-    <?php if ($this->session->flashdata('msg')) : ?>
-
-    <?php endif; ?>
     <div class="clearfix"></div>
     <div class="row">
         <div class="col-lg-12">
@@ -50,8 +46,8 @@
 
                                             <div class="form-group">
                                                 <label>Longitude</label>
-                                                <input type="text" class="form-control" name="longitude"
-                                                    placeholder="lon" id="lon" required>
+                                                <input type="text" class="form-control" name="lon"
+                                                    placeholder="Longitude" id="lon" required>
                                             </div>
                                         </div>
 
@@ -65,7 +61,10 @@
                                     <div id="map"></div>
                                 </div>
                         </div>
-                        <div class="col-lg-12 text-center">
+                        <div class="col-lg-12 text-center mt-2">
+                            <a href="<?= base_url('Kelurahan') ;?>" class="btn btn-secondary text-white"
+                                style="width: 25%">Back</a>
+
                             <button type="submit" class="btn btn-info" style="width: 25%">Simpan Data</button>
                         </div>
                         </form>
@@ -103,12 +102,14 @@ function initMap() {
     map = new google.maps.Map(document.getElementById("map"), myOptions);
     // marker refers to a global variable
     marker = new google.maps.Marker({
-        position: pekl,
+        // position: pekl,
         map: map
     });
 
     google.maps.event.addListener(map, "click", function(event) {
         // get lat/lon of click
+        marker.setPosition(event.latLng);
+
         var clickLat = event.latLng.lat();
         var clickLon = event.latLng.lng();
 

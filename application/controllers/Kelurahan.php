@@ -24,9 +24,6 @@ class Kelurahan extends CI_Controller{
             $this->load->view('kelurahan/kelurahan_tampil', $data);
             $this->load->view('templates/footer-datatables');
        }
-		// $this->load->view('admin/header',$data);
-		// $this->load->view('kelurahan/kelurahan_tampil',$data);
-		// $this->load->view('admin/footer');
 	}
 
 
@@ -58,24 +55,34 @@ class Kelurahan extends CI_Controller{
 
 		$this->kelurahan->simpan_kelurahan($data);
 
-		$this->session->set_flashdata('success', 'Data Berhasil Ditambahkan');
+		// $this->session->set_flashdata('success', 'Data Berhasil Ditambahkan');
+		
+        $this->session->set_flashdata('success', 'Berhasil Ditambahkan');
 		redirect('kelurahan');
 	}
 
 	
-
-
-	function ubah($id){
-
-		$data['query'] = $this->kelurahan->detail_kelurahan($id);
-		$data['kecamatan'] = $this->kecamatan->tampil_kecamatan()->result();
-		$this->load->view('admin/header');
-		$this->load->view('kelurahan/kelurahan_ubah',$data);
-		$this->load->view('admin/footer');
+	public function delete($idKelurahan) {
+		$res = $this->kelurahan->hapus_kelurahan($idKelurahan);
+        $this->session->set_flashdata('success', 'Berhasil Dihapus');
+		redirect('kelurahan');
 	}
 
 
-	function simpan_ubah($id){
+	function edit($id){
+		$data['title'] = 'Edit Data Kelurahan | Sistem Informasi Stunting';
+		$data['query'] = $this->kelurahan->detail_kelurahan($id);
+		$data['kecamatan'] = $this->kecamatan->tampil_kecamatan()->result();
+		$this->load->view('templates/header-datatables', $data);
+		$this->load->view('templates/sidebar');
+        $this->load->view('kelurahan/kelurahan_ubah', $data);
+		
+        $this->load->view('templates/footer-datatables');
+	}
+
+
+	function simpan_ubah(){
+		$id = $this->input->post('id');
 		$nama = $this->input->post('nama');
 		$kecamatan = $this->input->post('kecamatan');
 		$longitude = $this->input->post('lon');
@@ -88,33 +95,19 @@ class Kelurahan extends CI_Controller{
 			'latitude'=>$latitude
 		);
 
+		$this->kelurahan->ubah_kelurahan($data,$id);
 
-		$this->kelurahan->ubah_kelurahan($data, $id);
-
-		//tampilkan pesan sukses
-		$this->session->set_flashdata('pesan','<div class="alert alert-success">Simpan Data Berhasil.</div>');
-
-		//arahkan kembali ke halaman kelurahan atau controller kelurahan
-		redirect('kelurahan');
-
-	}
-
-
-	function hapus($id){
-		$this->kelurahan->hapus_kelurahan($id);
-		//tampilkan pesan sukses
-		$this->session->set_flashdata('pesan','<div class="alert alert-success">Hapus Data Berhasil.</div>');
-
-		//arahkan kembali ke halaman kelurahan atau controller kelurahan
+		$this->session->set_flashdata('success', 'Data Berhasil Diubah');
 		redirect('kelurahan');
 	}
 
 	function detail($id){
 		$data['query'] = $this->kelurahan->detail_kelurahan($id);
-
-		$this->load->view('admin/header');
-		$this->load->view('kelurahan/kelurahan_detail',$data);
-		$this->load->view('admin/footer');
+		$data['title'] = 'Detail Data Kelurahan | Sistem Informasi Stunting';
+		$this->load->view('templates/header-datatables', $data);
+		$this->load->view('templates/sidebar');
+		$this->load->view('kelurahan/kelurahan_detail', $data);
+		$this->load->view('templates/footer-datatables');
 	}
 
 	function showkelurahan(){

@@ -7,10 +7,10 @@ class M_kecamatan extends CI_Model{
 		parent::__construct();
 	}
 
-	function tampil_kecamatan($num=null, $offset=null){
+	function tampil_kecamatan(){
 		
 		$this->db->order_by('id_kecamatan','DESC');
-		$query = $this->db->get('tb_kecamatan',$num, $offset);
+		$query = $this->db->get('tb_kecamatan')->result_array();
 		return $query;
 	}
 

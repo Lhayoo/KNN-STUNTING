@@ -4,10 +4,6 @@
             <h3>Data kelurahan</h3>
         </div>
     </div>
-    <div class="flash-dataw" data-flashdata="<?php echo $this->session->flashdata('msg'); ?>"></div>
-    <?php if ($this->session->flashdata('msg')) : ?>
-
-    <?php endif; ?>
     <div class="clearfix"></div>
     <div class="row">
         <div class="col-md-12 col-sm-12 ">
@@ -67,3 +63,12 @@
         </div>
     </div>
 </div>
+
+
+<script type="text/javascript">
+<?php if ($this->session->flashdata('success')) { ?>
+toastr.success("<?php echo $this->session->flashdata('success'); ?>");
+
+<?php } ?>
+console.log();
+</script>

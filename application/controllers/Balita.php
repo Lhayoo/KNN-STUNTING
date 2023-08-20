@@ -38,6 +38,8 @@ class Balita extends CI_Controller
         $tanggalLahir = $_POST['tanggalLahir'];
         $jenisKelamin = $_POST['jenisKelamin'];
         $alamat = $_POST['alamat'];
+        $lat = $_POST['lat'];
+        $lng = $_POST['lon'];
         $namaIbu = $_POST['namaIbu'];
         $namaAyah = $_POST['namaAyah'];
 
@@ -65,7 +67,8 @@ class Balita extends CI_Controller
                 'alamat' => $alamat,
                 'tempatLahir' => $tempatLahir, 
                 'tanggalLahir' => $tanggalLahir, 
-
+                'lat' => $lat,
+                'long' => $lng,
                 'umur' => $umur, 
                 'panjangLahir' => $panjangLahir, 
                 'lingkar_kepala' => $lingkar_kepala,
@@ -99,6 +102,8 @@ class Balita extends CI_Controller
             'beratLahir' => $data[0]['beratLahir'],
             'telp_ibu' => $data[0]['telp_ibu'],
             'goldar' => $data[0]['goldar'],
+            'lat' => $data[0]['lat'],
+            'long' => $data[0]['long'],
             'jenisKelamin' => $data[0]['jenisKelamin']
         );
         return $balita;
@@ -137,7 +142,8 @@ class Balita extends CI_Controller
         $tanggalLahir = $_POST['tanggalLahir'];
         $tempatLahir = $_POST['tempatLahir'];
         $jenisKelamin = $_POST['jenisKelamin'];
-        
+        $lat = $_POST['lat'];
+        $lng = $_POST['lon'];
         $namaIbu = $_POST['namaIbu'];
         $namaAyah= $_POST['namaAyah'];
         $alamat = $_POST['alamat'];
@@ -162,6 +168,8 @@ class Balita extends CI_Controller
             'telp_ibu' => $telp_ibu,
             'lingkar_kepala' => $lingkar_kepala,
             'goldar' => $goldar,
+            'lat' => $lat,
+            'long' => $lng,
             'jenisKelamin' => $jenisKelamin
         );
         $where = array('id' => $id);

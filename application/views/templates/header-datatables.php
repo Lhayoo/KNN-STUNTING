@@ -25,6 +25,9 @@
 
     <!-- Custom Theme Style -->
     <link href="<?= base_url('build/css/custom.min.css') ?>" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="<?= base_url('build/css/toastr.min.css') ?>">
+
 </head>
 
 <body class="nav-md">
