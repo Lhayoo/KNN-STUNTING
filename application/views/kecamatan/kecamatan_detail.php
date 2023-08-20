@@ -53,8 +53,8 @@
 <script>
 function initMap() {
     var pekl = {
-        lat: <?php echo $query->latitude;?>,
-        lng: <?php echo $query->longitude;?>
+        lat: <?= ($query->latitude != '') ? $query->latitude : '-6.888701' ;?>,
+        lng: <?= ($query->longitude !='') ?  $query->longitude : '109.668289' ;?>
     };
     /*var map = new google.maps.Map(document.getElementById('map'), {
       zoom: 12,
@@ -75,7 +75,8 @@ function initMap() {
     map = new google.maps.Map(document.getElementById("map"), myOptions);
     // marker refers to a global variable
     marker = new google.maps.Marker({
-        position: pekl,
+
+        <?= ($query->longitude !="")?'position: pekl,': '' ;?>
         map: map
     });
 
