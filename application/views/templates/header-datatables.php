@@ -27,6 +27,7 @@
     <link href="<?= base_url('build/css/custom.min.css') ?>" rel="stylesheet">
 
     <link rel="stylesheet" type="text/css" href="<?= base_url('build/css/toastr.min.css') ?>">
+    <script type="text/javascript" src="<?php echo base_url(); ?>assets/ckeditor/ckeditor.js"></script>
 
 </head>
 

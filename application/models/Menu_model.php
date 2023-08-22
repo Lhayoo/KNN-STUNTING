@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Menu_model extends CI_Model {
+class Menu_model extends CI_Model {    
 
 	public function all()
 	{
@@ -9,11 +9,17 @@ class Menu_model extends CI_Model {
 		return $query = $this->db->query($query);
 	}
 
+    public function get_menu_by_id($id){
+        return $this->db
+        ->select('*')
+        ->get_where('tbl_menu',array('menu_id'=>$id))
+        ->row();
+    }
     function select_parent(){
         return $this->db->get_where('tbl_menu',array('is_main_menu'=>0));
     }
 
-	public function simpan(){
+	public function simpan_menu(){
         $data=array(
                     'menu_title'    =>  $this->input->post('title'),
                     'menu_content'  =>  $this->input->post('content'),

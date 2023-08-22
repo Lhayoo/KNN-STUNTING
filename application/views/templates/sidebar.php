@@ -26,6 +26,11 @@
                         </ul>
                     </li>
                 </ul>
+                <ul class="nav side-menu">
+                    <li><a href="<?= base_url('Menu') ?>"><i class="fa fa-child"></i>
+                            Menu</a>
+                    </li>
+                </ul>
                 <h3>Data Balita dan User</h3>
                 <ul class="nav side-menu">
                     <li><a href="<?= base_url('UsersController') ?>"><i class="fa fa-user"></i> Data Users</a>
