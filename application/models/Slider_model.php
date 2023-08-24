@@ -24,23 +24,14 @@ class Slider_model extends CI_Model {
         $this->db->insert('tbl_slider',$data);
     }
 
-    function update($gambar){
-        if($gambar==null){
-                    $data=array(
-                    'slide_title'   =>  $this->input->post('title'),
-                    'slide_desc'    =>  $this->input->post('desc'),
-                    'status'      	=>  $this->input->post('status')
- 				);
-        }else{
-                   $data=array(
-                    'slide_title'   =>  $this->input->post('title'),
-                    'slide_desc'    =>  $this->input->post('desc'),
-                    'slide_image'   =>   $gambar,
-                    'status'      	=>  $this->input->post('status')
- 				);
-        }
-        $this->db->where('slide_id',$this->input->post('id'));
-        $this->db->update('tbl_slider',$data);
+    function update($id, $data){
+        $this->db->where('slide_id', $id);
+        $this->db->update('tbl_slider', $data);
+    }
+    
+    public function delete($id){
+        $this->db->where('slide_id', $id);
+        $this->db->delete('tbl_slider');
     }
 
 }

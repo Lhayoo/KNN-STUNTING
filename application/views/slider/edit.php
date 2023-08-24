@@ -16,6 +16,7 @@
                                 <div class="col-lg">
                                     <h2>Data slider</h2>
                                     <hr>
+                                    <input type="hidden" name="id" value="<?= $slider->slide_id ;?>">
 
                                     <div class="form-group row">
                                         <label class="col-sm-2 col-form-label">Judul slider</label>
@@ -34,24 +35,31 @@
 
                                         </select>
                                     </div>
-                                    <div class="form-group row">
+                                    <div class="form-group row ">
                                         <label class="col-sm-2 col-form-label">Gambar slider</label>
                                         <div class="col-sm-10">
                                             <div class="custom-file">
-                                                <input type="file" class="custom-file-input" id="gambar" name="userfile"
+                                                <input type="file" class="custom-file-input" name="userfile"
                                                     id="inputgambar">
                                                 <label class="custom-file-label" for="gambar">Choose file</label>
+
                                             </div>
+                                            <img style="width: 200px; height: 120px;"
+                                                src="<?php echo base_url().'uploads/slider/'. $slider->slide_image ;?>"
+                                                class="img img-thumbnail" alt="...">
+
                                         </div>
                                     </div>
 
-                                    <div class="form-group row">
+                                    <div class="form-group row ">
                                         <label class="col-sm-2 col-form-label">Status</label>
                                         <div class="col-sm-10">
                                             <select class="form-control" name="status" required>
-                                                <option value="">-- Pilih Status --</option>
-                                                <option value="aktif">Aktif</option>
-                                                <option value="tidak">Tidak Aktif</option>
+                                                <option value="Aktif"
+                                                    <?= ($slider->status == 'Aktif') ? 'selected':'';?>>Aktif</option>
+                                                <option value="Tidak"
+                                                    <?= ($slider->status == 'Tidak') ? 'selected':'';?>>Tidak Aktif
+                                                </option>
                                             </select>
                                         </div>
 

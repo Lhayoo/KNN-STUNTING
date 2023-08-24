@@ -57,10 +57,39 @@ class Slider extends CI_Controller {
     
     }
 
-    function delete(){
-        $this->db->where('slide_id',$this->uri->segment(3));
-        $this->db->delete('tbl_slider');
-				$this->session->set_flashdata('info','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button> Slider berhasil dihapus!</div>');
+    function processUpdate(){
+        $config['upload_path']='./uploads/slider/';
+        $config['allowed_types']='jpg|png|jpeg';
+        $this->load->library('upload',$config);
+        if($this->upload->do_upload('userfile')==NULL){ 
+            $id = $this->input->post('id');
+            $data = array(
+                'slide_title' => $this->input->post('title'),
+                'slide_desc' => $this->input->post('desc'),
+                'status' => $this->input->post('status'),
+            );
+            $this->slide->update($id,$data);
+            redirect('slider');
+        }else{
+            $id = $this->input->post('id');
+            $slide = $this->slide->get_slider_by_id($id)->row();
+            unlink('./uploads/slider/'.$slide->slide_image);
+            $data=  $this->upload->data();
+            $data = array(
+                'slide_title' => $this->input->post('title'),
+                'slide_desc' => $this->input->post('desc'),
+                'status' => $this->input->post('status'),
+                'slide_image' => $data['file_name'],
+            );
+            $this->slide->update($id,$data);
+            redirect('slider');
+        }
+    }
+
+    function delete($id){
+        $slide = $this->slide->get_slider_by_id($id)->row();
+            unlink('./uploads/slider/'.$slide->slide_image);
+        $this->slide->delete($id);
         redirect('slider');
     }
 
