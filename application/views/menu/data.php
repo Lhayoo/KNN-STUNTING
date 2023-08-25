@@ -45,18 +45,14 @@
                                             </td>
 
                                             <td>
-                                                <a href="<?php echo base_url() . "menu/detail/" . $b['menu_id']; ?>"
-                                                    style="text-decoration: none;" title="Informasi Lengkap"><button
-                                                        type="button" class="btn btn-primary btn-circle"><i
-                                                            class="fa fa-list"></i></button>
-                                                    <a href="<?php echo base_url() . "menu/edit/" . $b['menu_id']; ?>"
-                                                        style="text-decoration: none;" title="Ubah Data"><button
-                                                            type="button" class="btn btn-warning btn-circle"><i
-                                                                class="fa fa-pencil"></i></button>
-                                                        <a href="<?php echo base_url() . "menu/delete/" . $b['menu_id']; ?>"
-                                                            style="text-decoration: none;" title="Hapus Data"><button
-                                                                type="button" class="btn btn-danger btn-circle"><i
-                                                                    class="fa fa-times"></i></button>
+                                                <a href="<?php echo base_url() . "menu/edit/" . $b['menu_id']; ?>"
+                                                    style="text-decoration: none;" title="Ubah Data"><button
+                                                        type="button" class="btn btn-warning btn-circle"><i
+                                                            class="fa fa-pencil"></i></button>
+                                                    <a href="<?php echo base_url() . "menu/delete/" . $b['menu_id']; ?>"
+                                                        style="text-decoration: none;" title="Hapus Data"><button
+                                                            type="button" class="btn btn-danger btn-circle"><i
+                                                                class="fa fa-times"></i></button>
                                             </td>
                                         </tr>
                                         <?php $i++; ?>

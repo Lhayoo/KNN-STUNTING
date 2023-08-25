@@ -41,6 +41,14 @@
                             Artikel</a>
                     </li>
                 </ul>
+                <ul class="nav side-menu">
+                    <li><a><i class="fa fa-child"></i>Media <span class="fa fa-chevron-down"></span></a>
+                        <ul class="nav child_menu">
+                            <li><a href="<?= base_url('Album') ?>">Album Foto</a></li>
+                            <li><a href="<?= base_url('Video') ?>">Album vedo</a></li>
+                        </ul>
+                    </li>
+                </ul>
                 <h3>Data Balita dan User</h3>
                 <ul class="nav side-menu">
                     <li><a href="<?= base_url('UsersController') ?>"><i class="fa fa-user"></i> Data Users</a>

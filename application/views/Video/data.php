@@ -1,7 +1,7 @@
 <div class="right_col" role="main">
     <div class="page-title">
         <div class="title_left">
-            <h3>Data Artikel</h3>
+            <h3>Data Video</h3>
         </div>
     </div>
     <div class="clearfix"></div>
@@ -9,8 +9,8 @@
         <div class="col-md-12 col-sm-12 ">
             <div class="x_panel">
                 <div class="x_title">
-                    <form action="<?= base_url('blog/create') ?>" method="POST">
-                        <input type="submit" name="simpan" value="Tambah Data" class="btn btn-primary">
+                    <form action="<?= base_url('Video/create') ?>" method="POST">
+                        <input type="submit" name="simpan" value="Tambah Data Video" class="btn btn-primary">
                         <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
@@ -21,46 +21,43 @@
                                     <thead>
                                         <tr>
                                             <th>No</th>
-                                            <th>Judul Artikel</th>
-                                            <th>Publish</th>
-                                            <th>Julmah View</th>
-                                            <th>Post oleh</th>
+                                            <th>Judul</th>
+                                            <th>Video</th>
                                             <th>Status</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php $i = 1; ?>
-                                        <?php foreach ($blog as $b) : ?>
+                                        <?php foreach ($video as $b) : ?>
                                         <tr>
                                             <th scope="row">
                                                 <center><?= $i; ?></center>
                                             </th>
-                                            <td><?= $b['post_title']; ?></td>
                                             <td>
-                                                <i class="fa fa-clock-o"></i> <?php echo $b['post_date']; ?>
+                                                <?php echo $b['post_title']; ?>
                                             </td>
                                             <td>
-                                                <i class="fa fa-eye"></i> <?php echo $b['post_views']; ?>
+                                                <iframe width="230" height="115" src="<?php echo $b['post_content']; ?>"
+                                                    frameborder="0"
+                                                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                                                    allowfullscreen></iframe>
+                                            </td>
                                             </td>
                                             <td>
-                                                <i class="fa fa-user"></i> <?php echo $b['name']; ?>
-                                            </td>
-                                            <td>
-                                                <!-- label -->
-                                                <?php if ($b['post_status'] == '1') { ?>
-                                                <span class="label label-success">Publish</span>
+                                                <?php if ($b['post_status'] == 1) { ?>
+                                                <span class="badge badge-success">Publish</span>
                                                 <?php } else { ?>
-                                                <span class="label label-danger">Draft</span>
+                                                <span class="badge badge-danger">Draft</span>
                                                 <?php } ?>
                                             </td>
 
                                             <td>
-                                                <a href="<?php echo base_url() . "blog/edit/" . $b['post_id']; ?>"
+                                                <a href="<?php echo base_url() . "Video/edit/" . $b['post_id']; ?>"
                                                     style="text-decoration: none;" title="Ubah Data"><button
                                                         type="button" class="btn btn-warning btn-circle"><i
                                                             class="fa fa-pencil"></i></button>
-                                                    <a href="<?php echo base_url() . "blog/delete/" . $b['post_id']; ?>"
+                                                    <a href="<?php echo base_url() . "Video/delete/" . $b['post_id']; ?>"
                                                         style="text-decoration: none;" title="Hapus Data"><button
                                                             type="button" class="btn btn-danger btn-circle"><i
                                                                 class="fa fa-times"></i></button>

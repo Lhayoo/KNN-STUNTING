@@ -1,7 +1,7 @@
 <div class="right_col" role="main">
     <div class="page-title">
         <div class="title_left">
-            <h3>Data Artikel</h3>
+            <h3>Data album</h3>
         </div>
     </div>
     <div class="clearfix"></div>
@@ -9,8 +9,8 @@
         <div class="col-md-12 col-sm-12 ">
             <div class="x_panel">
                 <div class="x_title">
-                    <form action="<?= base_url('blog/create') ?>" method="POST">
-                        <input type="submit" name="simpan" value="Tambah Data" class="btn btn-primary">
+                    <form action="<?= base_url('album/create') ?>" method="POST">
+                        <input type="submit" name="simpan" value="Tambah Data album" class="btn btn-primary">
                         <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
@@ -21,46 +21,38 @@
                                     <thead>
                                         <tr>
                                             <th>No</th>
-                                            <th>Judul Artikel</th>
-                                            <th>Publish</th>
-                                            <th>Julmah View</th>
-                                            <th>Post oleh</th>
+                                            <th>album</th>
                                             <th>Status</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php $i = 1; ?>
-                                        <?php foreach ($blog as $b) : ?>
+                                        <?php foreach ($album as $b) : ?>
                                         <tr>
                                             <th scope="row">
                                                 <center><?= $i; ?></center>
                                             </th>
-                                            <td><?= $b['post_title']; ?></td>
                                             <td>
-                                                <i class="fa fa-clock-o"></i> <?php echo $b['post_date']; ?>
+                                                <img style="width: 200px; height: 80px;"
+                                                    src="<?php echo base_url().'uploads/album/'. $b['album_thumbnail']?>"
+                                                    class="rounded float-left" alt="...">
+                                                <a href="#"> &nbsp <?php echo $b['album_name']; ?></a>
                                             </td>
                                             <td>
-                                                <i class="fa fa-eye"></i> <?php echo $b['post_views']; ?>
-                                            </td>
-                                            <td>
-                                                <i class="fa fa-user"></i> <?php echo $b['name']; ?>
-                                            </td>
-                                            <td>
-                                                <!-- label -->
-                                                <?php if ($b['post_status'] == '1') { ?>
-                                                <span class="label label-success">Publish</span>
+                                                <?php if ($b['album_status'] == 1) { ?>
+                                                <span class="badge badge-success">Publish</span>
                                                 <?php } else { ?>
-                                                <span class="label label-danger">Draft</span>
+                                                <span class="badge badge-danger">Draft</span>
                                                 <?php } ?>
                                             </td>
 
                                             <td>
-                                                <a href="<?php echo base_url() . "blog/edit/" . $b['post_id']; ?>"
+                                                <a href="<?php echo base_url() . "album/edit/" . $b['album_id']; ?>"
                                                     style="text-decoration: none;" title="Ubah Data"><button
                                                         type="button" class="btn btn-warning btn-circle"><i
                                                             class="fa fa-pencil"></i></button>
-                                                    <a href="<?php echo base_url() . "blog/delete/" . $b['post_id']; ?>"
+                                                    <a href="<?php echo base_url() . "album/delete/" . $b['album_id']; ?>"
                                                         style="text-decoration: none;" title="Hapus Data"><button
                                                             type="button" class="btn btn-danger btn-circle"><i
                                                                 class="fa fa-times"></i></button>

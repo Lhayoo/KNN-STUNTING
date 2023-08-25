@@ -16,9 +16,15 @@ class Blog_model extends CI_Model {
 
 
 
-	public function all_video()
+	public function all_video($id = false)
 	{
+		if ($id == false ){
+			
 		$query = "SELECT * FROM tbl_post JOIN user ON user.id_users = tbl_post.post_by WHERE post_type='video' ORDER BY post_id DESC";
+		return $query = $this->db->query($query);
+
+		}
+		$query = "SELECT * FROM tbl_post JOIN user ON user.id_users = tbl_post.post_by WHERE post_type='video' AND post_id = '$id'";
 		return $query = $this->db->query($query);
 	}
 
@@ -36,6 +42,11 @@ class Blog_model extends CI_Model {
     $this->db->set('post_views', 'post_views+1', false);
     $this->db->where('post_id', $id);
     $this->db->update('tbl_post');
+  }
+
+  public function delete($id){
+	$this->db->where('post_id',$id);
+	$this->db->delete('tbl_post');
   }
 }
 
