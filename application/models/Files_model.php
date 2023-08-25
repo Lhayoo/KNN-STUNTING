@@ -3,15 +3,21 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Files_model extends CI_Model {
 
-	public function all()
+	public function all($id = false)
 	{
-		$query = "SELECT * FROM tbl_files JOIN tb_user ON tb_user.id_user = tbl_files.file_by ORDER BY file_id DESC";
-		return $query = $this->db->query($query);
+		if($id == false){
+			$query = "SELECT * FROM tbl_files JOIN user ON user.id_users = tbl_files.file_by ORDER BY file_id DESC";
+			return $query = $this->db->query($query);
+		}else{
+			$query = "SELECT * FROM tbl_files JOIN user ON user.id_users = tbl_files.file_by WHERE file_id = $id";
+			return $query = $this->db->query($query);
+		}
+		
 	}
 
 	public function allfront()
 	{
-		$query = "SELECT * FROM tbl_files JOIN tb_user ON tb_user.id_user = tbl_files.file_by WHERE file_visibility = 1 ORDER BY file_id DESC";
+		$query = "SELECT * FROM tbl_files JOIN user ON user.id_users = tbl_files.file_by WHERE file_visibility = 1 ORDER BY file_id DESC";
 		return $query = $this->db->query($query);
 	}
 
@@ -22,6 +28,11 @@ class Files_model extends CI_Model {
   function update($data,$id){
     $this->db->where('file_id',$id);
     $this->db->update('tbl_files',$data);
+  }
+
+  function hapus($id){
+	$this->db->where('file_id',$id);
+	$this->db->delete('tbl_files');
   }
 
 	public function download_count($id)

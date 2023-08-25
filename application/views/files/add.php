@@ -1,7 +1,7 @@
 <div class="right_col" role="main">
     <div class="page-title">
         <div class="title_left">
-            <h3>Edit Data File</h3>
+            <h3>Tambah Data File</h3>
         </div>
     </div>
     <div class="clearfix"></div>
@@ -11,24 +11,24 @@
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-lg-12">
-                            <form method="POST" action="<?php echo base_url() . "index.php/File/processUpdate/" ?>"
+                            <form method="POST" action="<?php echo base_url() . "index.php/File/processAdd/" ?>"
                                 enctype="multipart/form-data">
                                 <div class="col-lg">
                                     <h2>Data File</h2>
                                     <hr>
-                                    <input type="hidden" value="<?= $file->file_id ;?>" name="id">
+
                                     <div class="form-group row">
                                         <label class="col-sm-2 col-form-label">Nama File</label>
                                         <div class="col-sm-10">
                                             <input type="text" class="form-control" name="title" placeholder="Nama File"
-                                                required value="<?= $file->file_title ;?>">
+                                                required>
                                         </div>
                                     </div>
                                     <div class="form-group row">
                                         <label class="col-sm-2 col-form-label">Deskripsi</label>
                                         <div class="col-sm-10">
                                             <textarea type="text" class="form-control" name="desc"
-                                                placeholder="Deskripsi " required><?= $file->file_desc ;?></textarea>
+                                                placeholder="Deskripsi " required></textarea>
                                         </div>
 
                                         </select>
@@ -39,8 +39,6 @@
                                             <div class="custom-file">
                                                 <input type="file" class="custom-file-input" id="gambar" name="userfile"
                                                     id="inputgambar">
-
-                                                <p>File saat ini : <?php echo $file->file_name;?></p>
                                                 <label class="custom-file-label" for="gambar">Choose file</label>
                                             </div>
                                         </div>
@@ -50,10 +48,9 @@
                                         <label class="col-sm-2 col-form-label">Status</label>
                                         <div class="col-sm-10">
                                             <select class="form-control" name="status" required>
-                                                <option value="1" <?= ($file->file_visibility == 1) ? 'selected': '';?>>
-                                                    Publish</option>
-                                                <option value="0" <?= ($file->file_visibility == 0) ? 'selected': '';?>>
-                                                    Private</option>
+                                                <option value="">-- Pilih Status --</option>
+                                                <option value="1">Public</option>
+                                                <option value="0">Private</option>
                                             </select>
                                         </div>
 

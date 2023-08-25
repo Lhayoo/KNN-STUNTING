@@ -6,101 +6,111 @@ class File extends CI_Controller{
   public function __construct()
   {
     parent::__construct();
-    cek_login();
+    // cek_login();
 	 	$this->load->model('files_model','files');
   }
 
   function index()
   {
-    $data['query'] = $this->files->all();
-		$this->load->view('admin/header',$data);
-    $this->load->view('files/data',$data);
-    $this->load->view('admin/footer');
+    $data['title'] = 'Data File | Sistem Informasi Stunting';
+    $data['file'] = $this->files->all()->result_array();
+		$this->load->view('templates/header-datatables', $data);
+		$this->load->view('templates/sidebar');
+        $this->load->view('files/data', $data);
+    
+        $this->load->view('templates/footer-datatables');
   }
 
   public function create()
-	{
-		if(isset($_POST['save'])){
-			      $config['upload_path']='./uploads/files/';
+	{$data['title'] = 'Tambah File | Sistem Informasi Stunting';
+    $data['file'] = $this->files->all()->result_array();
+		$this->load->view('templates/header-datatables', $data);
+		$this->load->view('templates/sidebar');
+        $this->load->view('files/add', $data);
+    
+        $this->load->view('templates/footer-datatables');
+	}
+
+  public function processAdd(){
+     $config['upload_path']='./uploads/files/';
             $config['allowed_types']='*';
             $config['overwrite']=TRUE;
             $this->load->library('upload',$config);
             $this->upload->do_upload();
             $data=  $this->upload->data();
             //var_dump($data);
-            $post_by = $this->session->userdata('iduser');
+            $post_by = $this->session->userdata('id_users');
             $filename = $data['file_name'];
             $filetype = $data['file_type'];
             $filesize = $data['file_size'];
             $data=array(
-                'file_title'      =>  $this->input->post('file_title'),
-                'file_desc'       =>  $this->input->post('file_desc'),
+                'file_title'      =>  $this->input->post('title'),
+                'file_desc'       =>  $this->input->post('desc'),
                 'file_name'       =>  $filename,
                 'file_visibility' =>  $this->input->post('status'),
                 'file_by'         =>  $post_by,
                 'file_created'    =>  date('Y-m-d'),
                 'file_size'       =>  $filesize,
                 'file_type'       =>  $filetype,
-     				);
+            );
             $this->files->simpan($data);
-            $this->session->set_flashdata('info','File Baru Berhasil Ditambahkan!');
-            redirect('file/create');
-		}
-		$this->load->view('admin/header');
-    $this->load->view('files/create');
-    $this->load->view('admin/footer');
-	}
-
-  function edit(){
-      if(isset($_POST['save'])){
-          $config['upload_path']='./uploads/files/';
-          $config['allowed_types']='*';
-          $config['overwrite']=TRUE;
-          $this->load->library('upload',$config);
-          $this->upload->do_upload();
-          $data=  $this->upload->data();
-          $post_by = $this->session->userdata('iduser');
-          $filename = $data['file_name'];
-          $filetype = $data['file_type'];
-          $filesize = $data['file_size'];
-          $id = $this->input->post('id');
-          if($filename==null){
-            $data=array(
-                'file_title'      =>  $this->input->post('file_title'),
-                'file_desc'       =>  $this->input->post('file_desc'),
-                'file_visibility' =>  $this->input->post('status'),
-                'file_by'         =>  $post_by,
-                'file_created'    =>  date('Y-m-d')
-     				);
-          }
-          else{
-            $data=array(
-                'file_title'      =>  $this->input->post('file_title'),
-                'file_desc'       =>  $this->input->post('file_desc'),
-                'file_name'       =>  $filename,
-                'file_visibility' =>  $this->input->post('status'),
-                'file_by'         =>  $post_by,
-                'file_created'    =>  date('Y-m-d'),
-                'file_size'       =>  $filesize,
-                'file_type'       =>  $filetype,
-     				);
-          }
-          $this->files->update($data,$id);
-          $this->session->set_flashdata('info','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button> File berhasil diubah!</div>');
-          redirect('file');
-      }else{
-          $id            = $this->uri->segment(3);
-          $data['row']   = $this->db->get_where('tbl_files',array('file_id'=>$id))->row_array();
-					$this->load->view('admin/header');
-			    $this->load->view('files/edit',$data);
-			    $this->load->view('admin/footer');
-      }
+            $this->session->set_flashdata('info','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button> File berhasil ditambahkan!</div>');
+            redirect('file');
+            
   }
 
-  function delete(){
-      $this->db->where('file_id',$this->uri->segment(3));
-      unlink("uploads/file".$post_image);
-      $this->db->delete('tbl_files');
+  function edit($id){
+    $data['title'] = 'Edit File | Sistem Informasi Stunting';
+    $data['file'] = $this->files->all($id)->row();
+		$this->load->view('templates/header-datatables', $data);
+		$this->load->view('templates/sidebar');
+        $this->load->view('files/edit', $data);
+    
+        $this->load->view('templates/footer-datatables');
+  }
+
+  public function processUpdate(){
+    $config['upload_path']='./uploads/files/';
+            $config['allowed_types']='*';
+            $config['overwrite']=TRUE;
+            $this->load->library('upload',$config);
+            $this->upload->do_upload();
+            $data=  $this->upload->data();
+            //var_dump($data);
+            $post_by = $this->session->userdata('id_users');
+            $filename = $data['file_name'];
+            $filetype = $data['file_type'];
+            $filesize = $data['file_size'];
+            if($filename == null){
+              $data=array(
+                'file_title'      =>  $this->input->post('title'),
+                'file_desc'       =>  $this->input->post('desc'),
+                'file_visibility' =>  $this->input->post('status'),
+                'file_by'         =>  $post_by,
+                'file_created'    =>  date('Y-m-d'),
+            );
+          }else{
+            $this->files->all($this->input->post('id'));
+            unlink("uploads/files/".$this->input->post('file_name'));
+            $data=array(
+                'file_title'      =>  $this->input->post('title'),
+                'file_desc'       =>  $this->input->post('desc'),
+                'file_name'       =>  $filename,
+                'file_visibility' =>  $this->input->post('status'),
+                'file_by'         =>  $post_by,
+                'file_created'    =>  date('Y-m-d'),
+                'file_size'       =>  $filesize,
+                'file_type'       =>  $filetype,
+            );
+          }
+            $this->files->update($data,$this->input->post('id'));
+            $this->session->set_flashdata('info','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button> File berhasil diupdate!</div>');
+            redirect('file');
+  }
+  function delete($id){
+    $file = $this->files->all($id)->row();
+    unlink("uploads/files/".$file->file_name);
+    $this->files->hapus($id);
       $this->session->set_flashdata('info','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button> File berhasil dihapus!</div>');
       redirect('file');
   }
