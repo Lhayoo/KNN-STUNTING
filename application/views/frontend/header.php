@@ -95,7 +95,7 @@
 			          ?>
 
                 <li>
-                    <a href="#">SEBARAN NARKOBA</a>
+                    <a href="#">SEBARAN STUNTING</a>
                 </li>
 
                 <li>
