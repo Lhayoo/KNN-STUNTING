@@ -75,6 +75,19 @@
                                     </div>
 
                                     <div class="col-lg-12">
+                                        <div class="form-group">
+                                            <label>Kelurahan</label>
+                                            <select class="form-control" name="kel_id" id="kelurahan" required>
+                                                <option value="">-- Pilih Kelurahan --</option>
+                                                <?php foreach ($kelurahan as $kel) : ?>
+                                                <option value="<?php echo $kel['id_kelurahan']; ?>">
+                                                    <?php echo $kel['nama_kelurahan']; ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- <div class="col-lg-12">
                                         <div class="row">
                                             <div class="col">
                                                 <div class="form-group">
@@ -102,7 +115,7 @@
                                     <div class="col-lg-12">
 
                                         <div id="map"></div>
-                                    </div>
+                                    </div> -->
 
                                 </div>
                                 <div class="col-lg-6">

@@ -7,13 +7,14 @@ class Balita extends CI_Controller
     {
         parent::__construct();
         $this->load->model('ModelPosyandu');
+        $this->load->model('M_kelurahan');
     }
 
     public function index() {
         $data['title'] = 'Data Balita | Sistem Informasi Stunting';
         $data['user'] = $this->db->get_where('user', ['username' => $this->session->userdata('username')])->row_array();
         
-        $balita = $this->ModelPosyandu->getData('balita', '*');
+        $balita = $this->ModelPosyandu->getAllBalita()->result_array();
         
         if ($this->form_validation->run() == false) {
             $this->load->view('templates/header-datatables', $data);
@@ -24,10 +25,12 @@ class Balita extends CI_Controller
     }
 
     public function add() {
+
+        $data['title'] = 'Tambah Data Balita | Sistem Informasi Stunting';
+        $data['kelurahan'] = $this->M_kelurahan->tampil_kelurahan();
         $this->load->view('templates/header-datatables');
         $this->load->view('templates/sidebar');
-        
-        $this->load->view('balita/input');
+        $this->load->view('balita/input', $data);
         $this->load->view('templates/footer-datatables');
     }
 
@@ -38,8 +41,9 @@ class Balita extends CI_Controller
         $tanggalLahir = $_POST['tanggalLahir'];
         $jenisKelamin = $_POST['jenisKelamin'];
         $alamat = $_POST['alamat'];
-        $lat = $_POST['lat'];
-        $lng = $_POST['lon'];
+        // $lat = $_POST['lat'];
+        // $lng = $_POST['lon'];
+        $kel_id = $_POST['kel_id'];
         $namaIbu = $_POST['namaIbu'];
         $namaAyah = $_POST['namaAyah'];
 
@@ -67,8 +71,9 @@ class Balita extends CI_Controller
                 'alamat' => $alamat,
                 'tempatLahir' => $tempatLahir, 
                 'tanggalLahir' => $tanggalLahir, 
-                'lat' => $lat,
-                'long' => $lng,
+                // 'lat' => $lat,
+                // 'long' => $lng,
+                'kel_id' => $kel_id,
                 'umur' => $umur, 
                 'panjangLahir' => $panjangLahir, 
                 'lingkar_kepala' => $lingkar_kepala,
@@ -85,26 +90,29 @@ class Balita extends CI_Controller
                 redirect('Balita');}}}
 
     public function informasiBayi($idBalita) {
-        $data = $this->ModelPosyandu->getData('balita', '*', 'where id = "' . $idBalita . '"');
+
        
+        $balita = $this->ModelPosyandu->getAllBalita($idBalita)->row();
         $balita = array(
-            'id' => $data[0]['id'],
-            'idBalita' => $data[0]['idBalita'],
-            'namaBayi' => $data[0]['namaBayi'], 
-            'namaIbu' => $data[0]['namaIbu'], 
-            'namaAyah' => $data[0]['namaAyah'], 
-            'alamat' => $data[0]['alamat'],
-            'tempatLahir' => $data[0]['tempatLahir'],
-            'tanggalLahir' =>  $data[0]['tanggalLahir'], 
-            'umur' => $data[0]['umur'],
-            'panjangLahir' => $data[0]['panjangLahir'],
-            'lingkar_kepala' => $data[0]['lingkar_kepala'],
-            'beratLahir' => $data[0]['beratLahir'],
-            'telp_ibu' => $data[0]['telp_ibu'],
-            'goldar' => $data[0]['goldar'],
-            'lat' => $data[0]['lat'],
-            'long' => $data[0]['long'],
-            'jenisKelamin' => $data[0]['jenisKelamin']
+            'id' => $balita->id,
+            'idBalita' => $balita->idBalita,
+            'namaBayi' => $balita->namaBayi,
+            'namaIbu' => $balita->namaIbu,
+            'namaAyah' => $balita->namaAyah,
+            'alamat' => $balita->alamat,
+            'tempatLahir' => $balita->tempatLahir,
+            'tanggalLahir' => $balita->tanggalLahir,
+            'lat' => $balita->lat,
+            'long' => $balita->long,
+            'kel_id' => $balita->kel_id,
+            'kel_nama' => $balita->nama_kelurahan,
+            'umur' => $balita->umur,
+            'panjangLahir' => $balita->panjangLahir,
+            'lingkar_kepala' => $balita->lingkar_kepala,
+            'beratLahir' => $balita->beratLahir,
+            'telp_ibu' => $balita->telp_ibu,
+            'goldar' => $balita->goldar,
+            'jenisKelamin' => $balita->jenisKelamin
         );
         return $balita;
     }
@@ -126,6 +134,7 @@ class Balita extends CI_Controller
         $cek = $this->ModelPosyandu->cekId('balita', 'where id = "' . $idBalita . '"');
         if ($cek > 0) {
             $data = $this->informasiBayi($idBalita);
+            $data['kelurahan'] = $this->M_kelurahan->tampil_kelurahan();
             $this->load->view('templates/header-datatables');
             $this->load->view('templates/sidebar');
             $this->load->view('balita/edit_Balita', $data);
@@ -142,8 +151,9 @@ class Balita extends CI_Controller
         $tanggalLahir = $_POST['tanggalLahir'];
         $tempatLahir = $_POST['tempatLahir'];
         $jenisKelamin = $_POST['jenisKelamin'];
-        $lat = $_POST['lat'];
-        $lng = $_POST['lon'];
+        // $lat = $_POST['lat'];
+        // $lng = $_POST['lon'];
+        $kel_id = $_POST['kel_id'];
         $namaIbu = $_POST['namaIbu'];
         $namaAyah= $_POST['namaAyah'];
         $alamat = $_POST['alamat'];
@@ -168,8 +178,9 @@ class Balita extends CI_Controller
             'telp_ibu' => $telp_ibu,
             'lingkar_kepala' => $lingkar_kepala,
             'goldar' => $goldar,
-            'lat' => $lat,
-            'long' => $lng,
+            // 'lat' => $lat,
+            // 'long' => $lng,
+            'kel_id' => $kel_id,
             'jenisKelamin' => $jenisKelamin
         );
         $where = array('id' => $id);

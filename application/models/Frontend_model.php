@@ -11,25 +11,25 @@ class Frontend_model extends CI_Model {
 
   public function kotas()
 	{
-		$query = "SELECT * FROM tbl_post as p JOIN tb_user as u ON u.id_user = p.post_by  WHERE post_type = 'post' AND post_status = 1 AND post_category = 'kota' ORDER BY post_id DESC LIMIT 1";
+		$query = "SELECT * FROM tbl_post as p JOIN user as u ON u.id_users = p.post_by  WHERE post_type = 'post' AND post_status = 1 AND post_category = 'kota' ORDER BY post_id DESC LIMIT 1";
 		return $query = $this->db->query($query);
 	}
 
   public function kota()
 	{
-		$query = "SELECT * FROM tbl_post as p JOIN tb_user as u ON u.id_user = p.post_by WHERE post_type = 'post' AND post_status = 1 AND post_category = 'kota' ORDER BY RAND() LIMIT 3";
+		$query = "SELECT * FROM tbl_post as p JOIN user as u ON u.id_users = p.post_by WHERE post_type = 'post' AND post_status = 1 AND post_category = 'kota' ORDER BY RAND() LIMIT 3";
 		return $query = $this->db->query($query);
 	}
 
   public function lains()
   {
-    $query = "SELECT * FROM tbl_post as p JOIN tb_user as u ON u.id_user = p.post_by  WHERE post_type = 'post' AND post_status = 1 AND post_category = 'lainnya' ORDER BY post_id DESC LIMIT 1";
+    $query = "SELECT * FROM tbl_post as p JOIN user as u ON u.id_users = p.post_by  WHERE post_type = 'post' AND post_status = 1 AND post_category = 'lainnya' ORDER BY post_id DESC LIMIT 1";
     return $query = $this->db->query($query);
   }
 
   public function lain()
   {
-    $query = "SELECT * FROM tbl_post as p JOIN tb_user as u ON u.id_user = p.post_by WHERE post_type = 'post' AND post_status = 1 AND post_category = 'lainnya' ORDER BY RAND() LIMIT 3";
+    $query = "SELECT * FROM tbl_post as p JOIN user as u ON u.id_users = p.post_by WHERE post_type = 'post' AND post_status = 1 AND post_category = 'lainnya' ORDER BY RAND() LIMIT 3";
     return $query = $this->db->query($query);
   }
 
@@ -54,7 +54,7 @@ class Frontend_model extends CI_Model {
 	public function k_berita($category){
 	    $this->load->library('pagination');
 	    
-	    $query = "SELECT * FROM tbl_post as p JOIN tb_user as u ON u.id_user = p.post_by  WHERE post_type = 'post' AND post_status = 1 AND post_category = '".$category."' ORDER BY post_id DESC";
+	    $query = "SELECT * FROM tbl_post as p JOIN user as u ON u.id_users = p.post_by  WHERE post_type = 'post' AND post_status = 1 AND post_category = '".$category."' ORDER BY post_id DESC";
 	    
 	    $config['base_url'] = base_url('index.php/berita/kategori/'.$category.' ');
 	    $config['total_rows'] = $this->db->query($query)->num_rows();

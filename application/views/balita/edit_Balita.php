@@ -33,9 +33,11 @@
                                     <div class="form-group">
                                         <label for="jenisKelamin">Jenis Kelamin</label><br>
                                         <label class="radio-inline"><input type="radio" name="jenisKelamin"
-                                                value="Laki-Laki" /> Laki-Laki</label>&nbsp;&nbsp;
+                                                value="Laki-Laki" <?= ($jenisKelamin == 'Laki-Laki')?'checked':'' ;?> />
+                                            Laki-Laki</label>&nbsp;&nbsp;
                                         <label class="radio-inline"><input type="radio" name="jenisKelamin"
-                                                value="Perempuan" /> Perempuan</label>
+                                                value="Perempuan" <?= ($jenisKelamin == 'Perempuan')?'checked':'' ;?> />
+                                            Perempuan</label>
                                     </div>
                                     <div class="col-lg-6">
                                         <div class="form-group">
@@ -74,6 +76,23 @@
                                         </div>
                                     </div>
                                     <div class="col-lg-12">
+                                        <div class="form-group">
+                                            <label>Kelurahan</label>
+                                            <select class="form-control" name="kel_id" id="kelurahan" required>
+                                                <option value="<?= $kel_id ;?>" selected><?= $kel_nama ;?></option>
+                                                <?php foreach ($kelurahan as $kel) : ?>
+                                                <?php
+                                                    if ($kel['id_kelurahan'] == $kel_id) {
+                                                        continue;
+                                                    }
+                                                    ?>
+                                                <option value="<?php echo $kel['id_kelurahan']; ?> ">
+                                                    <?php echo $kel['nama_kelurahan']; ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <!-- <div class="col-lg-12">
                                         <div class="row">
                                             <div class="col">
                                                 <div class="form-group">
@@ -101,7 +120,7 @@
                                     <div class="col-lg-12">
 
                                         <div id="map"></div>
-                                    </div>
+                                    </div> -->
                                 </div>
                                 <div class="col-lg-6">
                                     <h2>Informasi Kesehatan</h2>

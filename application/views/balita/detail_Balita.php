@@ -50,8 +50,12 @@
                                     <h4><strong>Alamat</strong></h4>
                                     <p><?php echo $alamat; ?></p>
                                 </div>
+                                <div class="col-lg-6">
+                                    <h4><strong>Kel</strong></h4>
+                                    <p><?php echo $kel_nama; ?></p>
+                                </div>
 
-                                <div class="col-lg-12 mb-2">
+                                <!-- <div class="col-lg-12 mb-2">
                                     <style>
                                     #map {
                                         height: 250px;
@@ -62,7 +66,7 @@
 
                                         <div id="map"></div>
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                     </div>

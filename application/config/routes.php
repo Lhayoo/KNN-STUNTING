@@ -52,4 +52,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
 $route['default_controller'] = 'Login';
 $route['KNN'] = 'Knn';
 $route['404_override'] = '';
+$route['p/(:any)'] ="p/detail";
+$route['berita/(:any)'] ="berita/detail";
 $route['translate_uri_dashes'] = FALSE;

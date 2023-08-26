@@ -5,6 +5,19 @@ class ModelPosyandu extends CI_Model {
     public function __construct() {
         $this->load->database();
     }
+
+	public function getAllBalita($id = false)
+	{
+		if($id == false){
+			$query = "SELECT * FROM balita JOIN tb_kelurahan ON tb_kelurahan.id_kelurahan = balita.kel_id ORDER BY idBalita DESC";
+			return $query = $this->db->query($query);
+		}else{
+			$query = "SELECT * FROM balita JOIN tb_kelurahan ON tb_kelurahan.id_kelurahan = balita.kel_id WHERE id = $id";
+			return $query = $this->db->query($query);
+		}
+		
+	}
+
     public function getData($tableName,$data,$where=""){
 		$data = $this -> db ->query('SELECT '.$data.' FROM '.$tableName." ".$where);
 		return $data -> result_array();
