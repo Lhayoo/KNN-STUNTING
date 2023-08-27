@@ -19,6 +19,7 @@ function tampil(id) {
     });
 }
 </script>
+
 <!-- banner-bottom-wthree -->
 <section class="banner-bottom-wthree py-5">
     <div class="container-fluid">
@@ -58,7 +59,7 @@ function tampil(id) {
                                     <select name="kecamatan" id="kecamatan" class="form-control input-sm">
                                         <option value="">--Semua--</option>
                                         <?php
-					                    foreach($kecamatan as $row){
+					                    foreach($list_kecamatan as $row){
 					                      echo '<option value="'.$row['id_kecamatan'].'">'.$row['nama_kecamatan'].'</option>';
 					                    }
 					                  ?>
@@ -109,6 +110,86 @@ function tampil(id) {
                             </div>
                         </th>
                     </tr>
+                </table>
+                <table>
+                    <thead>
+                        <th>Kecamatan</th>
+                        <th>Kelurahan</th>
+                        <th>Staus 1</th>
+                        <th>Staus 2</th>
+                        <th>Staus 3</th>
+                        <th>Staus 4</th>
+
+                    </thead>
+                    <tbody>
+                        <?php
+                            foreach($get_data as $data):
+                                $status1=0;
+                                $status2=0;
+                                $status3=0;
+                                $status4=0;
+                                foreach($fetchAll as $rows){
+                                    if($data->kel_id == $rows->kel_id){   
+                                        if($kelurahan != ''){
+                                            if($rows->kel_id == $kelurahan){
+                                                if($rows->status == 1){
+                                                    $status1++;
+                                                }else if($rows->status == 2){
+                                                    $status2++;
+                                                }else if($rows->status == 3){
+                                                    $status3++;
+                                                }else if($rows->status == 4){
+                                                    $status4++;
+                                                }
+                                            }
+                                        }elseif($kecamatan != ''){
+                                            if($rows->id_kecamatan == $kecamatan){
+                                                foreach($list_kelurahan as $kel){
+                                                    if($rows->id_kecamatan == $kel['id_kecamatan']){
+                                                        if($rows->kel_id == $kel['id_kelurahan']){
+                                                            if($rows->status == 1){
+                                                                $status1++;
+                                                            }else if($rows->status == 2){
+                                                                $status2++;
+                                                            }else if($rows->status == 3){
+                                                                $status3++;
+                                                            }else if($rows->status == 4){
+                                                                $status4++;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }else{
+                                            foreach($list_kelurahan as $kel){
+                                                if($rows->id_kecamatan == $kel['id_kecamatan']){
+                                                    if($rows->kel_id == $kel['id_kelurahan']){
+                                                        if($rows->status == 1){
+                                                            $status1++;
+                                                        }else if($rows->status == 2){
+                                                            $status2++;
+                                                        }else if($rows->status == 3){
+                                                            $status3++;
+                                                        }else if($rows->status == 4){
+                                                            $status4++;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                        ?>
+                        <tr>
+                            <td><?php echo $data->nama_kecamatan;?></td>
+                            <td><?php echo $data->nama_kelurahan;?></td>
+                            <td><?php echo $status1;?></td>
+                            <td><?php echo $status2;?></td>
+                            <td><?php echo $status3;?></td>
+                            <td><?php echo $status4;?></td>
+                        </tr>
+                        <?php endforeach;?>
+                    </tbody>
                 </table>
                 <?php echo form_close();?>
             </div>
@@ -195,15 +276,15 @@ function tampil(id) {
                     });
                 }
                 <?php
-                foreach($fetchAll as $rows):
+                foreach($get_data as $gd):
                 ?>
                 addMarker(
-                    <?php echo $rows->latitude;?>,
-                    <?php echo $rows->longitude;?>,
-                    `<?php echo $rows->status;?>`,
-                    `<?php echo $rows->nama_kelurahan;?>`,
-                    `<?php echo $rows->id;?>`,
-                    `<?php echo $rows->namaBayi;?>`
+                    <?php echo $gd->latitude;?>,
+                    <?php echo $gd->longitude;?>,
+                    `<?php echo $gd->status;?>`,
+                    `<?php echo $gd->nama_kelurahan;?>`,
+                    `<?php echo $gd->id;?>`,
+                    `<?php echo $gd->namaBayi;?>`
                 );
                 <?php endforeach;?>
 

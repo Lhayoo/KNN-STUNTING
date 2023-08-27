@@ -37,9 +37,10 @@ class Publik extends CI_Controller{
 			$data['kelurahan'] = $kelurahan;
 			$data['periode'] = $periode;
 
-			$data['kecamatan'] = $this->kecamatan->tampil_kecamatan();
-
+			$data['list_kecamatan'] = $this->kecamatan->tampil_kecamatan();
+			$data['list_kelurahan'] = $this->kelurahan->tampil_kelurahan();
 			$data['fetchAll'] = $this->publik->ambil_data($kecamatan,$kelurahan,$periode,$status)->result();
+			$data['get_data'] = $this->publik->ambil_data_group($kecamatan,$kelurahan,$periode,$status)->result();
 			$data['jumlah'] = $this->publik->ambil_data($kecamatan,$kelurahan,$periode,$status)->num_rows();
 
 			// var_dump($data['fetchAll']);
