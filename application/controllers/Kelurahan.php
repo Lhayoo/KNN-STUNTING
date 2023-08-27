@@ -72,7 +72,7 @@ class Kelurahan extends CI_Controller{
 	function edit($id){
 		$data['title'] = 'Edit Data Kelurahan | Sistem Informasi Stunting';
 		$data['query'] = $this->kelurahan->detail_kelurahan($id);
-		$data['kecamatan'] = $this->kecamatan->tampil_kecamatan()->result();
+		$data['kecamatan'] = $this->kecamatan->tampil_kecamatan();
 		$this->load->view('templates/header-datatables', $data);
 		$this->load->view('templates/sidebar');
         $this->load->view('kelurahan/kelurahan_ubah', $data);
